@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      a {
+        text-decoration: none;
+      }
+
+      caption {
+        text-align: left;
+      }
+
+      /* a 링크 달 때 밑줄 없애기 */
+    </style>
+  </head>
+  <body>
+    <h4>3행 4열 짜리 표를 만들어 봅시다.</h4>
+    <table border="1">
+      <tr>
+        <td>ㄱ</td>
+        <td>ㄴ</td>
+        <td>ㄷ</td>
+        <td>ㄹ</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+        <td>4</td>
+      </tr>
+      <tr>
+        <td>a</td>
+        <td>b</td>
+        <td>c</td>
+        <td>d</td>
+      </tr>
+    </table>
+
+    <h4>2행 3열 짜리 표를 만들어 봅시다.</h4>
+    <table border="1">
+      <!-- border 속성은 html5 에서 곧 사라질 속성이라 빨간색으로 뜸-->
+      <tr>
+        <td>a</td>
+        <td>b</td>
+        <td>c</td>
+        <td>d</td>
+      </tr>
+      <tr>
+        <td>e</td>
+        <td>f</td>
+        <td>g</td>
+        <td>h</td>
+      </tr>
+    </table>
+    <h4>테이블 셀의 병합</h4>
+    <!-- colspan와 rowspan 활용-->
+    <table border="1">
+      <tr>
+        <td colspan="2">*</td>
+        <!--열 합치기, column span 의 약자로  이후 합칠 행의 갯수 입력-->
+        <!-- <td>*</td> -->
+        <td>*</td>
+        <td>*</td>
+      </tr>
+      <tr>
+        <td>*</td>
+        <td>*</td>
+        <td>*</td>
+        <td rowspan="2">*</td>
+        <!-- row span 의 약자로 이후 합칠 행의 갯수 입력-->
+      </tr>
+      <tr>
+        <td>*</td>
+        <td>*</td>
+        <td>*</td>
+        <!-- <td>*</td> -->
+      </tr>
+    </table>
+
+    <h4>퀴즈</h4>
+    <table border="1">
+      <tr>
+        <td>1</td>
+        <td>2</td>
+        <td colspan="2">3</td>
+        <!-- <td>4</td> -->
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>6</td>
+        <td>7</td>
+        <td>8</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td rowspan="3">10</td>
+        <td>11</td>
+        <td>12</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <!-- <td>14</td> -->
+        <td>15</td>
+        <td>16</td>
+      </tr>
+      <tr>
+        <td>17</td>
+        <!-- <td>18</td> -->
+        <td>19</td>
+        <td>20</td>
+      </tr>
+      <tr>
+        <td>21</td>
+        <td>22</td>
+        <td>23</td>
+        <td>24</td>
+      </tr>
+      <tr>
+        <td>25</td>
+        <td colspan="3">26</td>
+        <!-- <td>27</td> -->
+        <!-- <td>28</td> -->
+      </tr>
+      <tr>
+        <td>29</td>
+        <td>30</td>
+        <td>31</td>
+        <td>32</td>
+      </tr>
+    </table>
+    <br />
+
+    <table border="1">
+      <caption>
+        주소록
+      </caption>
+      <thead>
+        <!--table 의 헤드 부분 설정-->
+        <th>이름</th>
+        <!-- tr로 작성 해도 되지만 헤드 부분을 구분화 하기 위해 tr 태그를 써준다-->
+        <th>전화번호</th>
+        <th>주소</th>
+        <th>이름</th>
+      </thead>
+      <tbody>
+        <!--table의 body 부분 설정-->
+        <tr>
+          <td>룻피</td>
+          <td>010-1234-5678</td>
+          <td>너희집 방구석</td>
+          <td><img src="luffy.jpg" /></td>
+        </tr>
+        <tr>
+          <td>도우너</td>
+          <td>010-1234-5678</td>
+          <td>너희집 방구석</td>
+          <td><img src="luffy.jpg" /></td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <table>
+      <caption id="profile">
+        <strong>프로필</strong>
+      </caption>
+      <tr>
+        <td style="color: gray">다른이름</td>
+        <td>김태형,V</td>
+        <td rowspan="5">
+          <a
+            href="https://search.naver.com/search.naver?where=image&query=%EB%B0%A9%ED%83%84%EC%86%8C%EB%85%84%EB%8B%A8+%EB%B7%94&sm=tab_txc"
+          >
+            <img src="V.jpg"
+          /></a>
+        </td>
+      </tr>
+      <tr>
+        <td style="color: gray">출생</td>
+        <td>1995.12.30, 염소자리, 돼지띠</td>
+        <!-- <td></td> -->
+      </tr>
+      <tr>
+        <td style="color: gray">나이</td>
+        <td>28세, 만 26세</td>
+        <!-- <td></td> -->
+      </tr>
+      <tr>
+        <td style="color: gray">소속 그룹</td>
+        <td>
+          <a
+            href="https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&mra=bjky&pkid=1&os=585527&qvt=0&query=%EB%B0%A9%ED%83%84%EC%86%8C%EB%85%84%EB%8B%A8"
+            >방탄소년단</a
+          >
+        </td>
+        <!-- <td></td> -->
+      </tr>
+      <tr>
+        <td style="color: gray">소속사</td>
+        <td>
+          <a
+            href="https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&qvt=0&query=%EB%B9%85%ED%9E%88%ED%8A%B8%20%EB%AE%A4%EC%A7%81"
+            >빅히트 뮤직</a
+          >
+        </td>
+        <!-- <td></td> -->
+      </tr>
+      <tr>
+        <td style="color: gray">데뷔</td>
+        <td>2013년 방탄소년단 싱글 앨범[2 COOL 4SKOOL]</td>
+        <td></td>
+      </tr>
+    </table>
+  </body>
+</html>
