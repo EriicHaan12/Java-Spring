@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이파일이 mybatis의 환경설정 파일임을 알려주는 코드  -->
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+  
+  <!-- 환경설정을 추가적으로 해야하면 이 태그 안에다 작성하면 된다. -->
+  <configuration></configuration>
