@@ -1,5 +1,3 @@
-.env
-node_modules/
 
 .env
 node_modules/
@@ -13,8 +11,11 @@ node_modules/
 # Package Files #
 *.jar
 *.war
+*.nar
 *.ear
-
+*.zip
+*.tar.gz
+*.rar
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
@@ -30,10 +31,6 @@ nbactions.xml
 nb-configuration.xml
 .nb-gradle/
 
-# Eclipse
-.classpath
-.project
-.settings/
 
 # Intellij
 .idea/
@@ -66,9 +63,7 @@ activemq-data/
 classes/
 
 # Log files
-jxl.log
-jmx.log
-derby.log
+*.log
 
 # Gradle artifacts
 .gradle
@@ -105,3 +100,27 @@ atlassian-ide-plugin.xml
 
 # VS Code
 .vscode/
+
+# Code Recommenders
+.recommenders/
+
+# Annotation Processing
+.apt_generated/
+.apt_generated_test/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+.cache-main
+.scala_dependencies
+.worksheet
+
+# Uncomment this line if you wish to ignore the project description file.
+# Typically, this file would be tracked if it contains build/dependency configurations:
+#.project
+
+### Eclipse Patch ###
+# Spring Boot Tooling
+.sts4-cache/
+
+
+# BlueJ files
+*.ctxt
