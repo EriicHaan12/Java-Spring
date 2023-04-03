@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class MemberController {
 	
 	
-	
-	
 	public MemberController() {
 		super();
 		// TODO Auto-generated constructor stub

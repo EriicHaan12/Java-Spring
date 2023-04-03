@@ -2,11 +2,60 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  
-  <mapper namespace="com.springbaic2.mapper.memberMapper">
-  
-  	<select id="getDateTime" resultType="string">
-	select now()  	
-  	</select>
-  
-  </mapper>
+
+<mapper namespace="com.springbaic2.mappers.memberMapper">
+
+	<select id="getDateTime" resultType="string">
+		select now()
+	</select>
+
+	<insert id="insertMemberWithFile">
+		insert into member
+		values(#{userId},sha1(md5(#{userPwd})),#{userEmail},#{userMobile},#{userGender},#{hobbies},#{job},#{userImg},#{memo},#{isAdmin});
+	</insert>
+
+	<update id="updateMember">
+		update member set userImg=#{userImg} where
+		userId=#{userId}
+	</update>
+
+	<delete id="deleteMember">
+		delete from member where userId=#{userId}
+	</delete>
+	<!-- 타입을 VO 로도 가져올 수 있다. -->
+	<select id="viewMemberByUserId"
+		resultType="com.springbasic2.domain.MemberVO">
+
+		select * from member where userId=#{userId}
+
+	</select>
+
+	<!-- 가져올 데이터 규칙이 일치하면 데이터 양이 많더라도 알아서 list로 가져와진다. -->
+	<select id="viewAllMember"
+		resultType="com.springbasic2.domain.MemberVO">
+
+		select * from member
+	</select>
+
+
+	<select id="loginMember"
+		resultType="com.springbasic2.domain.MemberVO">
+
+		select * from member where userId =#{userId} and
+		userPwd=sha1(md5(#{userPwd}))
+	</select>
+
+
+	<select id="checkDuplicateByUserId" resultType="int">
+		select count(*) as userCnt from member where userId=#{userId}
+
+	</select>
+
+
+	<select id="selectAllPointListByUserId" resultType="com.springbasic2.domain.MemberPointVO">
+		select * from memberpoint where who=#{who}
+
+	</select>
+
+
+</mapper>

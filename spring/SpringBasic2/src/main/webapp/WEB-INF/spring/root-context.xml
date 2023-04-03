@@ -10,23 +10,31 @@
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
-	
+
 	<!-- Root Context: defines shared resources visible to all other web components -->
-	
-	<!-- DB Connection 설정 -->
+
+	<!-- DB Connection 설정 <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"> </property> 
+		<property name="url" value="jdbc:mysql://localhost:3306/hjw?useSSL=false&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8"> 
+		</property> <property name="username" value="root"></property> <property 
+		name="password" value="1234"></property> </bean> -->
+
+	<!-- DB (log4jdbc) 설정 -->
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName"
-			value="com.mysql.cj.jdbc.Driver">
+			value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy">
 		</property>
 		<property name="url"
-			value="jdbc:mysql://localhost:3306/hjw?useSSL=false&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8">
+			value="jdbc:log4jdbc:mysql://localhost:3306/hjw?useSSL=false&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8">
 		</property>
 		<property name="username" value="root"></property>
 		<property name="password" value="1234"></property>
 	</bean>
-	
-	<!-- SqlSessionFactory 객체(mybatis 객체) 설정  ref: dataSource -->
+
+
+
+	<!-- SqlSessionFactory 객체(mybatis 객체) 설정 ref: dataSource -->
 	<bean id="sqlSessionFactory"
 		class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
@@ -34,21 +42,25 @@
 		<property name="configLocation"
 			value="classpath:/mybatis-config.xml">
 		</property>
-		<!-- mapper 파일이 위치 해 있는 곳-->
+		<!-- mapper 파일이 위치 해 있는 곳 -->
 		<property name="mapperLocations"
-			value="classpath:/mappers/**/memerMapper.xml">
-		</property>
-		
-		<!-- SqlSessionTemplate(spring-mybatis)객체 설정 -->
+			value="classpath:/mappers/**/memberMapper.xml" />
 	</bean>
 	
+	
+	
+
+
+	<!-- SqlSessionTemplate(spring-mybatis)객체 설정 -->
 	<bean id="sqlSession"
-		class="org.mybatis.spring.SqlSessionTemplate" 
+		class="org.mybatis.spring.SqlSessionTemplate"
 		destroy-method="clearCache">
-		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+		<constructor-arg name="sqlSessionFactory"
+			ref="sqlSessionFactory"></constructor-arg>
 	</bean>
-	
-	<!--  아래의 패키지를 조사(scan)하여 스프링 컨테이너가 확보 해야하는 객체를 수집 -->
-	<context:component-scan base-package="com.springbasic2.persistence"/>
-	
+
+	<!-- 아래의 패키지를 조사(scan)하여 스프링 컨테이너가 확보 해야하는 객체를 수집 -->
+	<context:component-scan
+		base-package="com.springbasic2.persistence" />
+
 </beans>

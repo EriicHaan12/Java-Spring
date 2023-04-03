@@ -13,6 +13,8 @@ public class MemberVO {
 	private String memo;
 	private String isAdmin;
 
+
+
 	public String getUserId() {
 		return userId;
 	}
@@ -93,6 +95,7 @@ public class MemberVO {
 		this.isAdmin = isAdmin;
 	}
 
+	
 
 	public MemberVO(String userId, String userPwd, String userEmail, String userMobile, String userGender,
 			String hobbies, String job, String userImg, String memo, String isAdmin) {
