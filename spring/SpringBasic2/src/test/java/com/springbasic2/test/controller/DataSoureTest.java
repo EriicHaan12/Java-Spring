@@ -1,4 +1,4 @@
-package com.springbasic2.controller;
+package com.springbasic2.test.controller;
 
 import java.sql.Connection;
 import java.sql.SQLException;

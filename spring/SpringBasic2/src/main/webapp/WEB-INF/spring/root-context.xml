@@ -30,9 +30,25 @@
 	<bean id="sqlSessionFactory"
 		class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
-		
+		<!-- mybatis 환경 설정 파일이 위치 해 있는 곳 -->
 		<property name="configLocation"
 			value="classpath:/mybatis-config.xml">
 		</property>
+		<!-- mapper 파일이 위치 해 있는 곳-->
+		<property name="mapperLocations"
+			value="classpath:/mappers/**/memerMapper.xml">
+		</property>
+		
+		<!-- SqlSessionTemplate(spring-mybatis)객체 설정 -->
 	</bean>
+	
+	<bean id="sqlSession"
+		class="org.mybatis.spring.SqlSessionTemplate" 
+		destroy-method="clearCache">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+	</bean>
+	
+	<!--  아래의 패키지를 조사(scan)하여 스프링 컨테이너가 확보 해야하는 객체를 수집 -->
+	<context:component-scan base-package="com.springbasic2.persistence"/>
+	
 </beans>

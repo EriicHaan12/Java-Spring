@@ -24,7 +24,7 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	<!-- com.springbasic.controller 패키지의 클래스를 조사(scan)하여 컨트롤러 객체를 찾는다. -->
-	<context:component-scan base-package="com.springbasic2.controller" />
+	<context:component-scan base-package="com.springbasic2.test.controller" />
 	
 	
 	<context:component-scan base-package="com.springbasic2.membercontroller"/>
