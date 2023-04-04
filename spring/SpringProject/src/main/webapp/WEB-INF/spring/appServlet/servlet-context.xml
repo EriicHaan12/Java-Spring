@@ -21,8 +21,18 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
+		<!-- 파일업로드를 위한 객체 -->
+		<!-- 파일의 경우 데이터가 여러 조각으로 분리되어 전송 될 수 밖에 없다.-->
+		<!-- 분리되어 전송 되어온 조각들을 재조립 객체-->
+		<beans:bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 파일 1개당 최대 사이즈 -->
+		<beans:property name="maxUploadSize" value="10485760"/>
+		</beans:bean>
+	
 	<context:component-scan base-package="com.springproj.controller" />
 	<context:component-scan base-package="com.springproj.exception"></context:component-scan>
 	
+
 	
 </beans:beans>

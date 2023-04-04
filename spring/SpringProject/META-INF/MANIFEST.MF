@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SpringProject
+Bundle-SymbolicName: SpringProject
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: SpringProject
+Export-Package: com.springproj.controller,
+ com.springproj.controller.board,
+ com.springproj.domain,
+ com.springproj.exception,
+ com.springproj.persistence,
+ com.springproj.service,
+ mappers

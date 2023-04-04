@@ -78,23 +78,19 @@
 						<tr onclick="goBoardDetail(${board.no });">
 
 							<td>${board.no }</td>
-							<td><c:if test="${board.step>0 }">
-									<c:forEach var="i" begin="1" end="${board.step }" step="1">
-										<img src="${contextPath }/images/reply.png" class="replyImg" />
-									</c:forEach>
-								</c:if> ${board.title }</td>
+							<td>${board.title }</td>
 							<td>${board.writer }</td>
 							<td>${board.postDate }</td>
 							<td>${board.readCount }</td>
 							<td>${board.likeCount }</td>
 						</tr>
+
 					</c:forEach>
 				</tbody>
 			</table>
 			<div class="btns">
 				<!-- 출력 날짜형식을 바꾸고 싶다면...  fmt:formatDate를 쓰자 -->
-				<button type="button" class="btn btn-secondary writeBtn"
-					onclick="location.href='writeBoard.jsp';">글쓰기</button>
+				<button type="button" class="btn btn-secondary writeBtn" onclick="location.href='writeBoard';">글쓰기</button>
 			</div>
 
 
