@@ -1,6 +1,7 @@
 package com.springproj.controller.board;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -14,9 +15,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.springproj.domain.BoardVo;
+import com.springproj.etc.UploadFileInfo;
 import com.springproj.etc.UploadFilesProc;
 import com.springproj.service.BoardService;
 
@@ -26,7 +29,10 @@ public class BoardController {
 
 	@Inject
 	private BoardService service;
-
+	
+	//업로드된 파일의 리스트 
+	private List<UploadFileInfo> upfileList = new ArrayList<UploadFileInfo>();
+	
 	@RequestMapping("listAll")
 	public void listAll(Model model) throws Exception {
 		System.out.println("controller : 게시판 목록 조회");
@@ -43,9 +49,8 @@ public class BoardController {
 	}
 
 	@RequestMapping(value = "upfiles", method = RequestMethod.POST) // post 방식으로 처리
-	public void uploadFileProcess(MultipartFile upfiles, HttpServletRequest req) throws IOException { // request로 받아온
-																										// file을 불러낼 클래스
-
+	public @ResponseBody UploadFileInfo uploadFileProcess(MultipartFile upfiles, HttpServletRequest req) throws IOException { 
+		// request로 받아온 file을 불러낼 클래스
 		System.out.println("파일 업로드 처리");
 		System.out.println("업로드 된 파일 이름 : " + upfiles.getOriginalFilename());
 		// getName() 객체명, getOriginalFilename 객체 내 파일 명
@@ -60,12 +65,16 @@ public class BoardController {
 		// request로부터 받아온 servlet 객체를 저장 할 경로(저장될 물리적 경로)
 		// 현재실행중인session 얻어오고 -> Session에서 실행중인 Context를 얻어온 뒤 -> 실질적인 경로를 얻어온다.
 
-		UploadFilesProc.uploadFile(originFilename, originFileType, upfilesContent, realPath);
-	
-		Calendar cal = Calendar.getInstance();
-		System.out.println("저장될 경로 : "+ realPath);
+		UploadFileInfo fileInfo =
+				UploadFilesProc.uploadFile(originFilename, originFileType, upfilesContent, realPath);
+		if(fileInfo !=null) {
+			this.upfileList.add(fileInfo);
+		}
+		for(UploadFileInfo ufi : this.upfileList) {
+			System.out.println(ufi.toString());
+		}
 		
-	
+		return fileInfo;
 	}
 
 }
