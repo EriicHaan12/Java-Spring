@@ -83,8 +83,8 @@ public class UploadFileInfo {
 	@Override
 	public String toString() {
 		return "UploadFileInfo [originFileName=" + originFileName + ", fileNameWithExt=" + fileNameWithExt + ", ext="
-				+ ext + ", mimeType=" + mimeType + ", base64Str=" + base64Str + ", thumbImgName=" + thumbImgName
-				+ ", isImage=" + isImage + "]";
+				+ ext + ", mimeType=" + mimeType + ", thumbImgName=" + thumbImgName + ", isImage=" + isImage + "]";
 	}
+
 
 }

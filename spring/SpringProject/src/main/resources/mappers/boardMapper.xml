@@ -3,8 +3,44 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springproj.mappers.boardMapper">
-	<select id="getAllBoards" resultType="com.springproj.domain.BoardVo">
+	<select id="getAllBoards"
+		resultType="com.springproj.domain.BoardVo">
 		select * from board order by no desc
 	</select>
+
+	<insert id="saveNewBoard">
+		insert into
+		board(writer,title,content)
+		values(#{writer}, #{title}, #{content})
+	</insert>
+
+	<insert id="saveUpFile">
+		insert into boardImg(boardNo, fileType, fileExt,
+		fileName, thumbFileName,base64File)
+		values(#{boardNo}, #{mimeType},
+		#{ext}, #{fileNameWithExt}, #{thumbImgName}, #{base64Str})
+	</insert>
+
+
+	<select id="getRecentBoardNo" resultType="int">
+		select max(no) from
+		board
+	</select>
+
+
+	<insert id="addPointToMember">
+		<!-- order selectKey의 쿼리문이 실행될 순서 before= 감싸준 쿼리문 이전에 실행 -->
+		<selectKey keyProperty="howmuch" resultType="int"
+			order="BEFORE">
+
+			select howmuch from pointpolicy where why=#{why}
+
+		</selectKey>
+
+		insert into memberpoint(who,why,howmuch)
+		values(#{who},#{why},#{howmuch})
+
+	</insert>
+
 
 </mapper>

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
@@ -25,27 +26,44 @@ import org.springframework.util.FileCopyUtils;
 
 public class UploadFilesProc {
 
+	/**
+	 * 삭제될 파일이 이미지인지 아닌지 판단하여 이미지면 (원본+썸네일 삭제) 이미지가 아니라면 원본 파일 삭제
+	 * @param ufi      : 삭제될 파일의 파일 정보
+	 * @param realPath : /resources/upfiles의 물리적 경로
+	 **/
+	public static void deleteUpFile(UploadFileInfo ufi, String realPath) {
+		// 원본 삭제
+		File target = new File(realPath + ufi.getFileNameWithExt());
+		target.delete();
+		if (ufi.isImage()) {
+			// 썸네일 삭제
+			File targetThumb = new File(realPath + ufi.getThumbImgName());
+			targetThumb.delete();
+		}
+	}
+
 	public static UploadFileInfo uploadFile(String originFileName, String originFileType, byte[] upfilesContent,
 			String realPath) {
-		String completePath = makeCalPath(realPath);
+		String completePath = makeCalPath(realPath); // 실제 저장 경로
+		
+
+		String customPath = completePath.substring(realPath.length());
+		System.out.println("파일 이름에 날짜를 붙여줄 path : " + customPath);
+
 		// FileNameAndExt 객체(unique한 새 파일이름, 확장자)
-		
-		String customPath= completePath.substring(realPath.length());
-		System.out.println("파일 이름에 날짜를 붙여줄 path : "+ customPath);
-		
 		UploadFileInfo uniqueFileName = makeNewUniqueFileName(originFileName);
 		uniqueFileName.setMimeType(originFileType);
-		
+
 		System.out.println("궁극적 저장 경로 : " + completePath);
 		System.out.println("궁극적 저장될 파일 이름 : " + uniqueFileName.toString());
 
-		
 		String savedFile = completePath + File.separator + uniqueFileName.getOriginFileName();
-		
-		uniqueFileName.setFileNameWithExt(customPath+File.separator+uniqueFileName.getOriginFileName());
-		
-		System.out.println("저장될 파일 이름 : " +savedFile);
-		
+
+		System.out.println("저장될 파일 주소(주소+파일이름+확장자) : " + savedFile);
+		uniqueFileName.setFileNameWithExt(customPath + File.separator + uniqueFileName.getOriginFileName());
+
+		System.out.println("저장될 파일 이름 : " + savedFile);
+
 		File saveTarget = new File(savedFile);
 
 		try {
@@ -69,30 +87,30 @@ public class UploadFilesProc {
 		return uniqueFileName;
 	}
 
-	private static void makeThumbnailImage(String savedFile, UploadFileInfo uniqueFileName, String completePath, String customPath)
-			throws IOException {
-		boolean result =false;
-		
+	private static void makeThumbnailImage(String savedFile, UploadFileInfo uniqueFileName, String completePath,
+			String customPath) throws IOException {
+		boolean result = false;
+
 		// 저장된 파일에 이미지 읽어오기
 		BufferedImage originImg = ImageIO.read(new File(savedFile));// 원본
 		BufferedImage thumbImg = Scalr.resize(originImg, Mode.FIT_TO_HEIGHT, 50, null);
-		
-		//썸네일용 이미지 파일 이름 지정
-		String thumbImgName = "thumb_"+uniqueFileName.getOriginFileName();
-		
-		//String thumbImgName = "thumb_" + uniqueFileName.getFileNameWithExt();
+
+		// 썸네일용 이미지 파일 이름 지정
+		String thumbImgName = "thumb_" + uniqueFileName.getOriginFileName();
+
+		// String thumbImgName = "thumb_" + uniqueFileName.getFileNameWithExt();
 		// 이름에 날짜까지 같이 저장(정확한 저장경로 데이터를 가져오기 위해서)
-		
+
 		// 썸네일 이미지 파일 저장
-		File saveTarget = new File(completePath+File.separator+thumbImgName);
-	
-		if(ImageIO.write(thumbImg,uniqueFileName.getExt(), saveTarget)) {
-			uniqueFileName.setThumbImgName(customPath+File.separator+thumbImgName);
+		File saveTarget = new File(completePath + File.separator + thumbImgName);
+
+		if (ImageIO.write(thumbImg, uniqueFileName.getExt(), saveTarget)) {
+			uniqueFileName.setThumbImgName(customPath + File.separator + thumbImgName);
 		}
-		
+
 		// 이미지 사이즈 크기를 int로 가져오는 메서드
 		System.out.println("이미지 사이즈 : " + originImg.getHeight());
-	//	uniqueFileName.setFileNameWithExt(customPath+File.separator+uniqueFileName.getFileNameWithExt());
+		// uniqueFileName.setFileNameWithExt(customPath+File.separator+uniqueFileName.getFileNameWithExt());
 
 		System.out.println("썸네일용 이미지 이름 : " + thumbImgName);
 		// .jfif 파일은 이미지파일이지만
@@ -105,12 +123,12 @@ public class UploadFilesProc {
 		// 즉 데이터 파일을 문자열만 표현해놓은것.
 
 		String result = null;
-		File upFile = new File(savedFile);
+		File upfile = new File(savedFile);
 		// 업로드할 String 타입의 savedFile을 File 클래스의 객체로 만들어준다.
 
 		// byte 타입의 배열 file 을 생성한 뒤
 		// 파일을 읽어서 btye 단위의 배열로 생성하는 함수 쓰기
-		byte[] file = FileUtils.readFileToByteArray(upFile); // 업로드 된 파일 읽기
+		byte[] file = FileUtils.readFileToByteArray(upfile); // 업로드 된 파일 읽기
 		result = Base64.getEncoder().encodeToString(file);// 읽은 파일을 base64 방식으로 인코딩
 		System.out.println("base64로 인코딩된 문자열 : " + result);
 
@@ -155,6 +173,7 @@ public class UploadFilesProc {
 		makeDir(realPath, year, month, date);
 		return realPath + date;
 	}
+
 	/**
 	 * realPath 경로에 year, month, date 폴더가 있는지 확인하고, 없으면 directory를 생성
 	 * 

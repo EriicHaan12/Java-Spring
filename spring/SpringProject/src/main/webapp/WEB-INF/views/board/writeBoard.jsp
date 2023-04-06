@@ -53,20 +53,23 @@
 			let files = evt.originalEvent.dataTransfer.files; //드래그 드랍된 파일
 			console.log(files);
 
-			for ( let f of files) {
+			for ( let file of files) {
+	
 				//여러개의 파일을 한꺼번에 드래그 해서 업로드 할 수 있도록 반복문을 써준다.
 			//반복문 시작
 				let formData = new FormData();
-				formData.append("upfiles", f);// form객체에 파일들 추가
+				formData.append("upfiles", file);// form객체에 파일들 추가
 				$.ajax({
 					url : "/board/upfiles",
 					type : "post",
 					data : formData, // 서블릿에 전송할 데이터
 					dataType : "json",
+					
 					processData : false, // 보낼 데이터를 wrapping (쿼리스트링 형태로 보낸다) -false 
 					//일반적으로 form의 기본값은 aplication/x-www.form-urlencoded 인데 
 					//false이면 기본값으로 전송 하지 않는다는 뜻
 					contentType : false, // 
+					async: false, // 동기식 전송
 					success : function(data) {
 						console.log(data);
 						if(data!=null){
@@ -78,29 +81,51 @@
 			}
 		});
 		
-		//삭제버튼 클릭시(동적 실행)
-		$(".uploadFile").on("click",".delFile", function(){
-			let remTarget = $(this).prev();
-			
-			alert($(remTarget).attr("id")+"를 삭제!");
-			
-		});
-		
-		
 	});
 	
 	
 	function displayUploadFile(data){
 		let output ="";
 		if(data.image){
-			output+="<img id='"+data.originFileName+"' class='uFile' src='/resources/upfiles/"+data.thumbImgName+"'/>";
-			output+="<image class='delFile' src='/resources/images/delete.png' width='20px' />";
+			output+="<img id='" + data.originFileName + "' class='uFile' src='/resources/upfiles/" + data.thumbImgName + "'/>";
+			output+="<image class='delFile' src='/resources/images/delete.png' width='20px' onclick='delFile(this);'/>";
+		
 		}else{
-			output+="<div><a id='"+data.originFileName+"' href='/resources/upfiles/"+data.fileNameWithExt+"'>"+data.originFileName+"</a>";
-			output+="<image class='delFile' src='/resources/images/delete.png' width='20px'/></div>";
+			output+="<div><a id='" + data.originFileName + "' href='/resources/upfiles/"+data.fileNameWithExt+"'>"+data.originFileName+"</a>";
+			output+="<image class='delFile' src='/resources/images/delete.png' width='20px' onclick='delFile(this);' />";
 		}	
-		$(".uploadFile").html(output);
+		$(".uploadFile").append(output);
 	}
+	
+	//삭제버튼 클릭시(동적 실행)
+	function delFile(fileId){
+		let removeId = 	$(fileId).prev().attr("id");// 삭제될 파일의 originFileName
+		console.log(removeId);
+		$.ajax({
+			url : "/board/remfile",
+			type : "get",
+			data : {
+				"remFileName" : removeId
+			}, // 서블릿에 전송할 데이터
+			dataType : "text", 
+			success : function(data) {
+				console.log(data);
+				if(data=="success"){
+					$(fileId).prev().remove();
+					$(fileId).remove();
+					
+				}
+			},error: function(){
+				// 서버의 controller 단에서 HttpStatus를 에러상태로 보내주면 여기서 처리된다.
+				//상태코드로 받아와서 실행되는 콜백함수
+				
+				alert("삭제 되지 않았습니다.");
+			}
+		});
+		
+	}
+	
+	
 	
 </script>
 
@@ -110,7 +135,7 @@
 	<jsp:include page="../header.jsp"></jsp:include>
 	<div class="container">
 		<h4 style="margin-top: 5px;">게시판 글쓰기 페이지</h4>
-		<form method="post" action="">
+		<form method="post" action="writeBoard">
 
 			<div class="mb-3 mt-3">
 				<label for="userId">작성자 : </label> <input type="text"
@@ -125,12 +150,10 @@
 			<textarea class="form-control" rows="20" id="content" name="content"></textarea>
 
 
-			<div class="form-check fileDrop">
-				<div>업로드 할 파일을 드래그 드랍 해 보세요!</div>
-			
+			<div class="form-check ">
+				<div class="fileDrop">업로드 할 파일을 드래그 드랍 해 보세요!</div>
 				<div class="uploadFile"></div>
 			</div>
-		
 
 			<div class="btns">
 				<button type="button" class="btn btn-success" onclick="">취소</button>
