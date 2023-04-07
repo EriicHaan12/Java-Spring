@@ -1,6 +1,6 @@
 package com.springproj.domain;
 
-import com.google.protobuf.Timestamp;
+import java.sql.Timestamp;
 
 public class BoardVo {
 	private int no;

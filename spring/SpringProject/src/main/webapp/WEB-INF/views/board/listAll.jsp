@@ -20,7 +20,11 @@
 <title>Insert title here</title>
 
 <script>
+	function goBoardDetail(no){
+		location.href='viewBoard?no='+no;
+	}
 	
+	console.log(${board.postDate} )
 </script>
 <style>
 .board {
@@ -74,9 +78,9 @@
 					</tr>
 				</thead>
 				<tbody>
+				
 					<c:forEach var="board" items="${boardList }">
 						<tr onclick="goBoardDetail(${board.no });">
-
 							<td>${board.no }</td>
 							<td>${board.title }</td>
 							<td>${board.writer }</td>

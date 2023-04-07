@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import com.springproj.domain.BoardImg;
 import com.springproj.domain.BoardVo;
 import com.springproj.domain.MemberPointVo;
 import com.springproj.etc.UploadFileInfo;
@@ -57,9 +58,33 @@ public class BoardDAOImpl implements BoardDAO {
 
 	@Override
 	public int addPointToMember(MemberPointVo mpv) throws Exception {
+
+		return session.insert(ns + ".addPointToMember", mpv);
+	}
+
+	@Override
+	public int updateReadCount(int no) throws Exception {
+
+		return session.update(ns + ".updateReadCount", no);
+	}
+
+	@Override
+	public BoardVo selectByBoardNo(int no) throws Exception {
+
+		return session.selectOne(ns + ".selectByBoardNo", no);
+	}
+
+	@Override
+	public List<BoardImg> selectUploadFile(int no) throws Exception {
+
+		return session.selectList(ns + ".selectUploadFile", no);
+	}
+
+	@Override
+	public int deleteBoardByNo(int no) throws Exception {
+		System.out.println("DAO 단의 no : "+ no);
 		
-		
-		return session.insert(ns+".addPointToMember",mpv);
+		return session.delete(ns+".deleteBoardByNo",no);
 	}
 
 }

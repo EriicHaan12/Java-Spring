@@ -2,6 +2,7 @@ package com.springproj.persistence;
 
 import java.util.List;
 
+import com.springproj.domain.BoardImg;
 import com.springproj.domain.BoardVo;
 import com.springproj.domain.MemberPointVo;
 import com.springproj.etc.UploadFileInfo;
@@ -22,5 +23,16 @@ public interface BoardDAO {
 	//게시물 작성한 회원에게 포인트 부여
 	int addPointToMember(MemberPointVo mpv)throws Exception;
 	
+	//게시물 no번 클릭시 조회수 증가
+	int updateReadCount(int no)throws Exception;
+	
+	//no번 게시글 조회
+	BoardVo selectByBoardNo(int no)throws Exception;
+
+	//no번 첨부 파일 조회
+	List<BoardImg> selectUploadFile(int no)throws Exception;
+	
+	//no번 게시물 삭제
+	int deleteBoardByNo (int no)throws Exception;
 	
 }

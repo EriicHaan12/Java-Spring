@@ -3,9 +3,9 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springproj.mappers.boardMapper">
-	<select id="getAllBoards"
-		resultType="com.springproj.domain.BoardVo">
-		select * from board order by no desc
+	<select id="getAllBoards" resultType="boardVo">
+		select * from board order
+		by no desc
 	</select>
 
 	<insert id="saveNewBoard">
@@ -32,15 +32,35 @@
 		<!-- order selectKey의 쿼리문이 실행될 순서 before= 감싸준 쿼리문 이전에 실행 -->
 		<selectKey keyProperty="howmuch" resultType="int"
 			order="BEFORE">
-
 			select howmuch from pointpolicy where why=#{why}
-
 		</selectKey>
-
+		
 		insert into memberpoint(who,why,howmuch)
 		values(#{who},#{why},#{howmuch})
-
 	</insert>
+
+
+	<select id="selectByBoardNo" resultType="boardVo">
+		select * from board
+		where no=#{no}
+	</select>
+
+
+	<update id="updateReadCount">
+		update board set readcount = readcount+1 where
+		no=#{no}
+	</update>
+
+
+<select id="selectUploadFile" resultType="com.springproj.domain.BoardImg">
+	select * from boardimg where boardNo=#{no}
+
+</select>
+
+
+<delete id="deleteBoardByNo" >
+	delete from board where no =#{no}
+</delete>
 
 
 </mapper>

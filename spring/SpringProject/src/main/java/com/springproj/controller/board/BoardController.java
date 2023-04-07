@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springproj.domain.BoardImg;
 import com.springproj.domain.BoardVo;
 import com.springproj.etc.UploadFileInfo;
 import com.springproj.etc.UploadFilesProc;
@@ -32,7 +34,7 @@ public class BoardController {
 
 	@Inject
 	private BoardService service;
-	
+
 	private String realPath;
 
 	// 업로드된 파일의 리스트
@@ -54,16 +56,23 @@ public class BoardController {
 	}
 
 	@RequestMapping(value = "writeBoard", method = RequestMethod.POST)
-	public void writeBoard(BoardVo newBoard) throws Exception {
+	public String writeBoard(BoardVo newBoard) throws Exception {
 		System.out.println("controller : 게시판 저장");
 		System.out.println(newBoard.toString());
-
-		if (this.service.saveBoard(newBoard, upFileList)) {
-
+		String redirectPage = "";
+		if (this.service.saveBoard(newBoard, upFileList)) {// 업로드파일이 있다면
 			if (this.upFileList.size() > 0) {
 				this.upFileList.clear();// 글등록이 완료 되면 해당 글의 업로드 파일리스트를 비워 준다.
+
+				redirectPage = "listAll";
+				// redirectPage="/board/listAll";
+			} else {
+				redirectPage = "writeBoard?status=fail";
+				// redirectPage="/board/writeBoard?status=fail";
 			}
+
 		};
+		return "redirect:" + redirectPage; // 게시글 성공 혹은 실패시 갈 redirect 페이지 설정
 	}
 
 	@RequestMapping(value = "upfiles", method = RequestMethod.POST) // post 방식으로 처리
@@ -87,7 +96,7 @@ public class BoardController {
 		// 현재실행중인session 얻어오고 -> Session에서 실행중인 Context를 얻어온 뒤 -> 실질적인 경로를 얻어온다.
 
 		UploadFileInfo fileInfo = UploadFilesProc.uploadFile(originFilename, originFileType, upfilesContent, realPath);
-		
+
 		if (fileInfo != null) {
 
 			this.upFileList.add(fileInfo);
@@ -124,4 +133,40 @@ public class BoardController {
 		return result;
 	}
 
+	@RequestMapping("viewBoard")
+	public void viewBoard(@RequestParam("no") int no, Model model) throws Exception {
+		System.out.println(no + "번 글 조회!");
+		Map<String, Object> map = this.service.viewByBoardNo(no);
+
+		// 리턴된 Map으로 부터 다시 원래 객체를 얻어옴
+		BoardVo board = (BoardVo) map.get("board");
+		List<BoardImg> lst = (List<BoardImg>) map.get("upFiles");
+
+		// 바인딩
+		model.addAttribute("board", board);
+		model.addAttribute("upFiles", lst);
+
+	}
+	@RequestMapping("remBoard")
+	public String deleteBoard(@RequestParam("no")int no, Model model ) throws Exception {
+		System.out.println("삭제할 게시글 번호 : "+ no );
+		
+		int result = service.deleteBoard(no);
+	
+		System.out.println("삭제할 게시글 번호 : "+ no );
+		
+		
+		System.out.println(result);
+		
+		String redirectPage = "";
+		if(result==1) {
+			redirectPage="/board/listAll";
+		}else {
+			redirectPage="/board/viewBoard?no="+no;
+		}
+	return "redirect:"+ redirectPage;
+
+	}
 }
+
+
