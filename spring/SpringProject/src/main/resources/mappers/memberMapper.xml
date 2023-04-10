@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.springproj.mappers.memberMapper">
+
+	<select id="login" resultType="com.springproj.domain.MemberVo">
+
+		select* from member where userId = #{userId} and
+		userPwd=sha1(md5(#{userPwd}));
+	</select>
+
+
+</mapper>

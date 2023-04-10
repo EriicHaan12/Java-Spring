@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.springproj.domain.BoardImg;
 import com.springproj.domain.BoardVo;
+import com.springproj.domain.MemberVo;
 import com.springproj.etc.UploadFileInfo;
 import com.springproj.etc.UploadFilesProc;
 import com.springproj.service.BoardService;
@@ -49,12 +51,15 @@ public class BoardController {
 		model.addAttribute("boardList", lst);
 	}
 
+	// 호출될 땐 POST 방식 보다 GET 방식이 먼저 호출 된다.
+	// 글 쓰러 들어올 때 호출
 	@RequestMapping("writeBoard")
 	public void writeBoard() {
 		System.out.println("controller : 게시판 글쓰기");
 		// writeBoard.jsp를 호출
 	}
 
+	// 글쓰기 완료 버튼을 눌렀을 때
 	@RequestMapping(value = "writeBoard", method = RequestMethod.POST)
 	public String writeBoard(BoardVo newBoard) throws Exception {
 		System.out.println("controller : 게시판 저장");
@@ -71,7 +76,8 @@ public class BoardController {
 				// redirectPage="/board/writeBoard?status=fail";
 			}
 
-		};
+		}
+		;
 		return "redirect:" + redirectPage; // 게시글 성공 혹은 실패시 갈 redirect 페이지 설정
 	}
 
@@ -147,26 +153,50 @@ public class BoardController {
 		model.addAttribute("upFiles", lst);
 
 	}
-	@RequestMapping("remBoard")
-	public String deleteBoard(@RequestParam("no")int no, Model model ) throws Exception {
-		System.out.println("삭제할 게시글 번호 : "+ no );
-		
-		int result = service.deleteBoard(no);
-	
-		System.out.println("삭제할 게시글 번호 : "+ no );
-		
-		
-		System.out.println(result);
-		
-		String redirectPage = "";
-		if(result==1) {
-			redirectPage="/board/listAll";
-		}else {
-			redirectPage="/board/viewBoard?no="+no;
-		}
-	return "redirect:"+ redirectPage;
 
+	@RequestMapping("modiBoard")
+	public String modiBoard(@RequestParam("no") int no, @RequestParam("writer") String writer, HttpServletRequest req,
+			Model model) throws Exception {
+
+		// Authentication 인터셉터에 의해 로그인 여부 검사 후 -> 로그인 처리
+
+		System.out.println(no + "번을 DB에서 가져오기");
+String forward= "";
+		// 로그인한 유저가 작성자와 같을때 만 수정 되어야함
+		MemberVo loginMember = (MemberVo) req.getSession().getAttribute("loginMember");
+
+		if (loginMember.getUserId().equals(writer)) {
+			Map<String, Object> map = this.service.viewByBoardNo(no);
+			// 리턴된 Map으로 부터 다시 원래 객체를 얻어옴
+			BoardVo board = (BoardVo) map.get("board");
+			List<BoardImg> lst = (List<BoardImg>) map.get("upFiles");
+
+			// 바인딩
+			model.addAttribute("board", board);
+			model.addAttribute("upFiles", lst);
+				forward = "board/modiBoard";
+		} 
+			return forward;
 	}
+
+//	@RequestMapping("remBoard")
+//	public String deleteBoard(@RequestParam("no") int no, Model model) throws Exception {
+//		System.out.println("삭제할 게시글 번호 : " + no);
+//
+//		int result = service.deleteBoard(no);
+//
+//		System.out.println("삭제할 게시글 번호 : " + no);
+//
+//		System.out.println(result);
+//
+//		String redirectPage = "";
+//		if (result == 1) {
+//			redirectPage = "/board/listAll";
+//		} else {
+//			redirectPage = "/board/viewBoard?no=" + no;
+//		}
+//		return "redirect:" + redirectPage;
+//
+//	}
+
 }
-
-

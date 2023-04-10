@@ -39,6 +39,8 @@ public class BoardServiceImpl implements BoardService {
 		// 1~4번 전체를 트랜잭션 처리 해줘야함
 
 		// 1) 글 insert
+		// 게시글 줄바꿈 처리
+		newBoard.setContent(newBoard.getContent().replace("\n", "<br />"));
 		int insertResult = dao.insertNewBoard(newBoard);
 
 		if (insertResult == 1) {
@@ -61,7 +63,7 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	@Transactional(isolation = Isolation.READ_COMMITTED) // 커밋된 데이터만 읽기
-	
+
 	public Map<String, Object> viewByBoardNo(int no) throws Exception {
 
 		// 게시글 조회시 조회수 늘리기 작업(이번엔 24시간 제약 걸지말고 누를 때마다 올리기)
@@ -73,22 +75,20 @@ public class BoardServiceImpl implements BoardService {
 		BoardVo board = dao.selectByBoardNo(no);
 		// 3) 첨부 파일 읽어옴
 
-		List<BoardImg>upFiles =  dao.selectUploadFile(no);
-		 
-		
+		List<BoardImg> upFiles = dao.selectUploadFile(no);
+
 		Map<String, Object> returnMap = new HashMap<String, Object>();
-		 returnMap.put("board", board);
-		 returnMap.put("upFiles", upFiles);
+		returnMap.put("board", board);
+		returnMap.put("upFiles", upFiles);
 
 		return returnMap;
 	}
 
 	@Override
 	public int deleteBoard(int no) throws Exception {
-		
+
 		System.out.println("서비스단 삭제할 글번호 : " + no);
-		
-		
+
 		return dao.deleteBoardByNo(no);
 	}
 

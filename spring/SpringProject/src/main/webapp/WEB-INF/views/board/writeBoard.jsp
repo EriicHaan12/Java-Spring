@@ -139,7 +139,7 @@
 
 			<div class="mb-3 mt-3">
 				<label for="userId">작성자 : </label> <input type="text"
-					class="form-control" id="writer" name="writer" value="" />
+					class="form-control" id="writer" name="writer" value="${sessionScope.loginMember.userId}"  readonly/>
 			</div>
 			<div class="mb-3 mt-3">
 				<label for="title">제 목 : </label> <input type="text"

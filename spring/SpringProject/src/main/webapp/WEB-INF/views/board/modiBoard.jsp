@@ -6,23 +6,16 @@
 <html>
 <head>
 <meta charset="UTF-8" />
-<title>게시판 상세 조회 페이지</title>
+<title>게시판 수정 페이지</title>
 <script>
-	function deleteBoard() {
-		location.href = // 
-		"remBoard?no=" + $
-		{
-			board.no
-		}
-		; //
-	}
+	
 </script>
 </head>
 <body>
 	<c:set var="realPath" value="<%=request.getContextPath()%>" />
 	<jsp:include page="../header.jsp"></jsp:include>
 	<div class="container">
-		<h4 style="margin-top: 5px">게시판 상세 조회 페이지</h4>
+		<h4 style="margin-top: 5px">게시판 수정 페이지</h4>
 		<div class="mb-3 mt-3">
 			<label for="userId">번호 : </label> <input type="text"
 				class="form-control" id="boardNo" value="${board.no }" readonly />
@@ -39,21 +32,15 @@
 
 		<div class="mb-3 mt-3">
 			<label for="title">제 목 : </label> <input type="text"
-				class="form-control" id="title" value="${board.title }" readonly />
-		</div>
-		<div class="mb-3 mt-3">
-			<label for="title">조회수 : </label> <input type="text"
-				class="form-control" id="title" value="${board.readCount }" readonly />
-		</div>
-		<div class="mb-3 mt-3">
-			<label for="title">추천수 : </label> <input type="text"
-				class="form-control" id="title" value="${board.likeCount }" readonly />
+				class="form-control" id="title" value="${board.title }" />
 		</div>
 
-		<div class="form-check">
+		<div>
 			<label for="content">본 문 :</label>
-			<div>${board.content }</div>
+			<textarea class="form-control" rows="20" id="content" name="content">	${board.content }</textarea>
 		</div>
+
+
 
 		<div class="form-check">
 			<c:forEach var="file" items="${upFiles}">
@@ -74,14 +61,10 @@
 		</div>
 
 		<div class="btns">
-
-			<button type="button" class="btn btn-success"
-				onclick="location.href='modiBoard?no=${board.no}&writer=${board.writer}'">수정</button>
-			<button type="button" class="btn btn-success" onclick="">삭제</button>
-
 			<!-- <button type="button" class="btn btn-success" onclick="location.href='modiBoard?no=${param.no}';">수정</button> -->
-
-
+			<button type="button" class="btn btn-success">저장</button>
+			<button type="button" class="btn btn-success"
+				onclick="isOwner('remove');">삭제</button>
 
 			<button type="button" class="btn btn-warning"
 				onclick="location.href=listAll;">목록으로</button>

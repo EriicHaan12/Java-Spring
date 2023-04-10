@@ -26,6 +26,7 @@
 	<jsp:include page="header.jsp"></jsp:include>
 	<div class="container">
 		<h1>index.jsp</h1>
+		<div>${sessionScope.loginMember }</div>
 
 		<div class="readCountTop3">
 			<h4>인기글</h4>

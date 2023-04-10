@@ -18,9 +18,11 @@
 
 <style type="text/css">
 .userImg {
-	width: 40px;
+	width: 50px;
+	height: 50px;
 	border-radius: 20px;
 }
+
 </style>
 </head>
 <body>
@@ -41,8 +43,20 @@
 					<li class="nav-item"><a class="nav-link" href="/board/listAll">게시판</a></li>
 
 
-					<li class="nav-item"><a class="nav-link" href="">로그인</a></li>
+					<c:choose>
+						<c:when test="${ sessionScope.loginMember!=null }">
 
+							<li class="nav-item"><a class="nav-link" href="/logout">로그아웃
+									<img class="userImg"
+									src="/resources/${sessionScope.loginMember.userImg}">
+									${sessionScope.loginMember.userId }
+							</a></li>
+						</c:when>
+
+						<c:otherwise>
+							<li class="nav-item"><a class="nav-link" href="/login">로그인</a></li>
+						</c:otherwise>
+					</c:choose>
 				</ul>
 			</div>
 		</div>
