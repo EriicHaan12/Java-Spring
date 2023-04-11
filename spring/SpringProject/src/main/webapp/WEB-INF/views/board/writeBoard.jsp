@@ -103,9 +103,10 @@
 		console.log(removeId);
 		$.ajax({
 			url : "/board/remfile",
-			type : "get",
+			type : "get", 
 			data : {
-				"remFileName" : removeId
+				"remFileName" : removeId,
+			
 			}, // 서블릿에 전송할 데이터
 			dataType : "text", 
 			success : function(data) {

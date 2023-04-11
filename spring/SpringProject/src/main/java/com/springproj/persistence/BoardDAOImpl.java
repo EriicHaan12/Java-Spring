@@ -80,11 +80,22 @@ public class BoardDAOImpl implements BoardDAO {
 		return session.selectList(ns + ".selectUploadFile", no);
 	}
 
+//	@Override
+//	public int deleteBoardByNo(int no) throws Exception {
+//		System.out.println("DAO 단의 no : " + no);
+//		return session.delete(ns + ".deleteBoardByNo", no);
+//	}
+//
 	@Override
-	public int deleteBoardByNo(int no) throws Exception {
-		System.out.println("DAO 단의 no : "+ no);
+	public int updateBoard(BoardVo modiBoard) throws Exception {
+
+		return session.update(ns + ".updateBoard", modiBoard);
+	}
+
+	@Override
+	public int deleteBoardImg(int no) throws Exception {
 		
-		return session.delete(ns+".deleteBoardByNo",no);
+		return session.delete(ns+".deleteBoardImg",no);
 	}
 
 }

@@ -87,11 +87,11 @@ public class HomeController {
 		System.out.println("로그아웃");
 
 		ses.removeAttribute("loginMember");
-
-		ses.removeAttribute("loginMember");
 		ses.removeAttribute("returnPath");
 		ses.invalidate(); // 무효화 시키기
 
+		String uri = req.getRequestURI();
+		System.out.println("로그아웃 할 때 uri : " + uri);
 		return "redirect:/"; // 로그아웃 하면 index.jsp 로 redirect 강제 이동 시키기.
 
 	}

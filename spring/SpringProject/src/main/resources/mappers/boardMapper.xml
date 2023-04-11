@@ -34,7 +34,7 @@
 			order="BEFORE">
 			select howmuch from pointpolicy where why=#{why}
 		</selectKey>
-		
+
 		insert into memberpoint(who,why,howmuch)
 		values(#{who},#{why},#{howmuch})
 	</insert>
@@ -52,15 +52,27 @@
 	</update>
 
 
-<select id="selectUploadFile" resultType="com.springproj.domain.BoardImg">
-	select * from boardimg where boardNo=#{no}
+	<select id="selectUploadFile"
+		resultType="com.springproj.domain.BoardImg">
+		select * from boardimg where boardNo=#{no}
 
-</select>
+	</select>
 
 
-<delete id="deleteBoardByNo" >
-	delete from board where no =#{no}
-</delete>
+	<delete id="deleteBoardByNo">
+		delete from board where no =#{no}
+	</delete>
 
+
+	<update id="updateBoard">
+
+		update board set title=#{title}, content=#{content},
+		postDate=now() where no =#{no}
+	</update>
+
+
+	<delete id="deleteBoardImg">
+		delete from boardimg where boardNo= #{no}
+	</delete>
 
 </mapper>

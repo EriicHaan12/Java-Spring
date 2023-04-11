@@ -34,7 +34,6 @@ public class BoardServiceImpl implements BoardService {
 	// 트랜잭션 어노테이션 사용(다른 설정을 추가 하지 않으면 default(기본격리 수준으로)로 설정됨 )
 	@Transactional
 	public boolean saveBoard(BoardVo newBoard, List<UploadFileInfo> fileList) throws Exception {
-		boolean result = false;
 
 		// 1~4번 전체를 트랜잭션 처리 해줘야함
 
@@ -55,10 +54,8 @@ public class BoardServiceImpl implements BoardService {
 			// 4)글쓴 맴버에게 포인트 부여
 			dao.addPointToMember(new MemberPointVo(0, newBoard.getWriter(), null, "게시판글쓰기", 0));
 
-			result = true;
 		}
-
-		return result;
+		return true;
 	}
 
 	@Override
@@ -89,7 +86,30 @@ public class BoardServiceImpl implements BoardService {
 
 		System.out.println("서비스단 삭제할 글번호 : " + no);
 
-		return dao.deleteBoardByNo(no);
+		return dao.deleteBoardImg(no);
+	}
+
+	@Override
+	@Transactional
+	public boolean modifyBoard(BoardVo modiBoard, List<UploadFileInfo> fileList) throws Exception {
+		modiBoard.setContent(modiBoard.getContent().replace("\n", "<br />"));
+
+		// 1) 게시물 update(작성일, 제목, content)
+		int updateBoardResult = dao.updateBoard(modiBoard);
+
+		if (updateBoardResult == 1) { // 뭔가 수정이 일어났을 때
+			// 2) 업로드된 파일 update
+			// -> no번 게시글 첨부파일 모두 삭제
+			dao.deleteBoardImg(modiBoard.getNo());
+
+			// ->업로드한 파일이 있다면 파일 insert
+			for (UploadFileInfo ufi : fileList) {
+				dao.insertBoardFile(modiBoard.getNo(), ufi);
+			}
+
+		}
+
+		return true;
 	}
 
 }

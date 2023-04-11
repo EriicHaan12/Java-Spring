@@ -1,5 +1,7 @@
 package com.springproj.etc;
 
+import com.springproj.domain.BoardImg;
+
 public class UploadFileInfo {
 	private String originFileName; // 경로 없는 unique한 파일 이름
 	private String fileNameWithExt;// 경로가 포함 되어있음
@@ -18,6 +20,21 @@ public class UploadFileInfo {
 		this.base64Str = base64Str;
 		this.thumbImgName = thumbImgName;
 		this.isImage = isImage;
+	}
+
+	public UploadFileInfo(BoardImg bi) {
+		this.base64Str = bi.getBase64File();
+		this.originFileName=bi.getFileName();
+		this.ext = bi.getFileExt();
+		this.fileNameWithExt = bi.getFileName();
+		this.mimeType = bi.getFileType();
+		this.thumbImgName = bi.getThumbFileName();
+
+		if (bi.getThumbFileName().equals("")) {
+			this.isImage = false;
+		} else {
+			this.isImage = true;
+		}
 	}
 
 	public UploadFileInfo(String originFileName, String ext) {
@@ -85,6 +102,5 @@ public class UploadFileInfo {
 		return "UploadFileInfo [originFileName=" + originFileName + ", fileNameWithExt=" + fileNameWithExt + ", ext="
 				+ ext + ", mimeType=" + mimeType + ", thumbImgName=" + thumbImgName + ", isImage=" + isImage + "]";
 	}
-
 
 }

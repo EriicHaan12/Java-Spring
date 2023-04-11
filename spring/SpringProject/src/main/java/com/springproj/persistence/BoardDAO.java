@@ -32,7 +32,12 @@ public interface BoardDAO {
 	//no번 첨부 파일 조회
 	List<BoardImg> selectUploadFile(int no)throws Exception;
 	
-	//no번 게시물 삭제
-	int deleteBoardByNo (int no)throws Exception;
+//	//no번 게시물 삭제
+//	int deleteBoardByNo (int no)throws Exception;
 	
+	//no번 게시물 수정
+	int updateBoard(BoardVo modiBoard)throws Exception;
+	
+	//no첨부 파일 삭제
+	int deleteBoardImg(int no)throws Exception;
 }

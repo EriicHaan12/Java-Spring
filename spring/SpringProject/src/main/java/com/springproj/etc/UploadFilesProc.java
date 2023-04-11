@@ -16,6 +16,8 @@ import org.imgscalr.Scalr;
 import org.imgscalr.Scalr.Mode;
 import org.springframework.util.FileCopyUtils;
 
+import com.springproj.domain.BoardImg;
+
 /**
  * @author goott6
  * @param originFileName : 업로드 된 파일 이름(확장자 포함)
@@ -28,6 +30,7 @@ public class UploadFilesProc {
 
 	/**
 	 * 삭제될 파일이 이미지인지 아닌지 판단하여 이미지면 (원본+썸네일 삭제) 이미지가 아니라면 원본 파일 삭제
+	 * 
 	 * @param ufi      : 삭제될 파일의 파일 정보
 	 * @param realPath : /resources/upfiles의 물리적 경로
 	 **/
@@ -42,10 +45,22 @@ public class UploadFilesProc {
 		}
 	}
 
+	// 수정시 파일 삭제
+	public static void deleteUpFile(BoardImg bi, String realPath) {
+		// 원본 삭제
+		File target = new File(realPath + bi.getFileName());
+		target.delete();
+
+		if (!bi.getThumbFileName().equals("")) {
+			// 썸네일 삭제
+			File targetThumb = new File(realPath + bi.getThumbFileName());
+			targetThumb.delete();
+		}
+	}
+
 	public static UploadFileInfo uploadFile(String originFileName, String originFileType, byte[] upfilesContent,
 			String realPath) {
 		String completePath = makeCalPath(realPath); // 실제 저장 경로
-		
 
 		String customPath = completePath.substring(realPath.length());
 		System.out.println("파일 이름에 날짜를 붙여줄 path : " + customPath);

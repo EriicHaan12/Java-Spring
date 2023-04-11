@@ -22,7 +22,6 @@
 	height: 50px;
 	border-radius: 20px;
 }
-
 </style>
 </head>
 <body>
@@ -51,6 +50,10 @@
 									src="/resources/${sessionScope.loginMember.userImg}">
 									${sessionScope.loginMember.userId }
 							</a></li>
+							
+							<li class="nav-item"><a class="nav-link"
+								href="/member/myPage?userId=${sessionScope.loginMember.userId}">Mypage </a></li>
+							
 						</c:when>
 
 						<c:otherwise>

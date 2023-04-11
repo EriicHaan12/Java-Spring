@@ -3,6 +3,7 @@ package com.springproj.controller.board;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class BoardController {
 
 	private String realPath;
 
-	// 업로드된 파일의 리스트
+	// 신규 업로드된 파일의 리스트(게시판 저장시 사용될 파일 리스트)
 	private List<UploadFileInfo> upFileList = new ArrayList<UploadFileInfo>();
 
 	@RequestMapping("listAll")
@@ -75,7 +76,6 @@ public class BoardController {
 				redirectPage = "writeBoard?status=fail";
 				// redirectPage="/board/writeBoard?status=fail";
 			}
-
 		}
 		;
 		return "redirect:" + redirectPage; // 게시글 성공 혹은 실패시 갈 redirect 페이지 설정
@@ -118,24 +118,23 @@ public class BoardController {
 
 	@RequestMapping(value = "remfile")
 	public ResponseEntity<String> removeFile(@RequestParam("remFileName") String delFileName) {
+
 		System.out.println("삭제할 파일명 : " + delFileName);
 
 		int indexOfDeletedFile = 0; // 삭제되는 파일 리스트의 인덱스 번호를 확인하기 위해서
+		// 게시판 글 수정시 파일 삭제
 		for (UploadFileInfo ufi : upFileList) {
-
-			if (delFileName.equals(ufi.getOriginFileName())) {// upFileList(업로드한 파일 리스트 중) 삭제할 파일을 찾았을 때
-				UploadFilesProc.deleteUpFile(ufi, this.realPath); // 삭제 완료
+			if (delFileName.equals(ufi.getOriginFileName())) { // 삭제할 파일 찾기
+				UploadFilesProc.deleteUpFile(ufi, delFileName);// 삭제 하기
 				break;
 			}
 			indexOfDeletedFile++;
 		}
-		this.upFileList.remove(indexOfDeletedFile);// 리스트에서 파일삭제
-
+		this.upFileList.remove(indexOfDeletedFile); // 리스트에서 파일 삭제
 		for (UploadFileInfo ufi : this.upFileList) {
-			System.out.println("삭제 후 파일 업로드 리스트 : " + ufi.toString());
+			System.out.println("현재 파일 업로드 리스트 : " + ufi.toString());
 		}
 		ResponseEntity<String> result = new ResponseEntity<String>("success", HttpStatus.OK);
-
 		return result;
 	}
 
@@ -155,48 +154,45 @@ public class BoardController {
 	}
 
 	@RequestMapping("modiBoard")
-	public String modiBoard(@RequestParam("no") int no, @RequestParam("writer") String writer, HttpServletRequest req,
-			Model model) throws Exception {
-
-		// Authentication 인터셉터에 의해 로그인 여부 검사 후 -> 로그인 처리
+	public void modiBoard(@RequestParam("no") int no, @RequestParam("writer") String writer, Model model)
+			throws Exception {
 
 		System.out.println(no + "번을 DB에서 가져오기");
-String forward= "";
-		// 로그인한 유저가 작성자와 같을때 만 수정 되어야함
-		MemberVo loginMember = (MemberVo) req.getSession().getAttribute("loginMember");
+		// DB다녀옴(no번 글+ no번 글의 첨부 파일을 같이 얻어옴)
+		// 리턴된 Map으로 부터 다시 원래 객체를 얻어옴
+		Map<String, Object> map = this.service.viewByBoardNo(no);
 
-		if (loginMember.getUserId().equals(writer)) {
-			Map<String, Object> map = this.service.viewByBoardNo(no);
-			// 리턴된 Map으로 부터 다시 원래 객체를 얻어옴
-			BoardVo board = (BoardVo) map.get("board");
-			List<BoardImg> lst = (List<BoardImg>) map.get("upFiles");
+		BoardVo board = (BoardVo) map.get("board");
+		board.setContent(board.getContent().replace("<br />", "\n"));
 
-			// 바인딩
-			model.addAttribute("board", board);
-			model.addAttribute("upFiles", lst);
-				forward = "board/modiBoard";
-		} 
-			return forward;
+		List<BoardImg> lst = (List<BoardImg>) map.get("upFiles");
+
+		// 바인딩
+		model.addAttribute("board", board);
+		model.addAttribute("upFiles", lst);
+
+		// List<BoardImg>에 있는 객체들을 List<UploadFileInfo> upFileList 로 바꾸어 저장
+		this.upFileList.clear();
+
+		for (BoardImg bi : lst) {
+			this.upFileList.add(new UploadFileInfo(bi));
+		}
+
+		for (UploadFileInfo ufi : this.upFileList) {
+			System.out.println(" 수정 바인딩한  업로드 리스트 : " + ufi.toString());
+		}
+
 	}
 
-//	@RequestMapping("remBoard")
-//	public String deleteBoard(@RequestParam("no") int no, Model model) throws Exception {
-//		System.out.println("삭제할 게시글 번호 : " + no);
-//
-//		int result = service.deleteBoard(no);
-//
-//		System.out.println("삭제할 게시글 번호 : " + no);
-//
-//		System.out.println(result);
-//
-//		String redirectPage = "";
-//		if (result == 1) {
-//			redirectPage = "/board/listAll";
-//		} else {
-//			redirectPage = "/board/viewBoard?no=" + no;
-//		}
-//		return "redirect:" + redirectPage;
-//
-//	}
+	@RequestMapping(value = "modifyBoard", method = RequestMethod.POST)
+	public String modifyBoard(BoardVo modifyBoard) throws Exception {
+		System.out.println(modifyBoard.toString() + "로 수정 하자");
+
+		this.service.modifyBoard(modifyBoard, this.upFileList);
+
+		this.upFileList.clear();
+
+		return "redirect:viewBoard?no=" + modifyBoard.getNo();
+	}
 
 }
