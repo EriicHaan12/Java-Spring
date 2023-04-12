@@ -9,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.springproj.domain.MemberVo;
+import com.springproj.etc.DestinationPathProc;
 
 //제어를 빼앗아 실제 로그인을 처리하는 interceptor 이다.
 public class LoginInterceptor extends HandlerInterceptorAdapter {
@@ -19,8 +20,10 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		System.out.println("로그인 처리 하러 왔음...loginInterceptor");
 		HttpSession ses = request.getSession();
 		
-		ses.removeAttribute("loginMember");// 세션에 남아있는 데이터 지워주기
-		ses.removeAttribute("returnPath");
+		//DestinationPathProc.returnPathProc(request);
+		
+		// ses.removeAttribute("loginMember");// 세션에 남아있는 데이터 지워주기
+		// ses.removeAttribute("returnPath");
 		
 		return true;
 	}
@@ -29,7 +32,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 
-		System.out.println("로그인 처리 하려고 DB 처리하러 옴...postHandle");
+		System.out.println("로그인 처리... LoginInterceptor의  postHandle");
 
 		HttpSession ses = request.getSession();
 		// 여기서 가져온 ModelMap은 이전 Home컨트롤러 단에서 바인딩한 Model 객체를 가지고 있는 객체이다
