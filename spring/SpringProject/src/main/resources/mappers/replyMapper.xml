@@ -5,14 +5,27 @@
 <mapper namespace="com.springproj.mappers.replyMapper">
 
 	<insert id="insertReply">
-insert into replies(boardNo, replier,replyText)
-	values(#{boardNo},#{replier},#{replytext})
+		insert into replies(boardNo, replier,replyText)
+		values(#{boardNo},#{replier},#{replytext})
 	</insert>
 
-	<select id="selectAllReplies" resultType="com.springproj.domain.Replies">
+	<select id="selectAllReplies"
+		resultType="com.springproj.domain.Replies">
+
+		select * from replies where boardNo =#{boardNo} order by replyNo desc
+	</select>
+
+
+	<update id="updateReply">
+
+		update replies set replytext= #{replytext}, postdate = now() where replyNo =
+		#{replyNo}
+	</update>
 	
-	select * from replies where boardNo =#{boardNo} order by replyNo desc
+	<select id="">
+	
+	select * from replies where boardNo = #{boardNo} order by ref desc, replyNo asc;
 	</select>
 	
-	
+
 </mapper>

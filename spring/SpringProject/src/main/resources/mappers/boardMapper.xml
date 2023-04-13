@@ -5,7 +5,7 @@
 <mapper namespace="com.springproj.mappers.boardMapper">
 	<select id="getAllBoards" resultType="boardVo">
 		select * from board order
-		by no desc
+		by no desc limit #{startRowIndex}, #{viewPostCntPerPage}
 	</select>
 
 	<insert id="saveNewBoard">
@@ -74,5 +74,44 @@
 	<delete id="deleteBoardImg">
 		delete from boardimg where boardNo= #{no}
 	</delete>
+
+
+	<select id="getTotalBoardCnt" resultType="int">
+		select count(*) from
+		board
+	</select>
+
+	<select id="getTotalBoardCntWithSearch" resultType="int">
+		select count(*) from board where
+		<choose>
+			<when test="searchType=='title'">
+				title like #{searchWord}
+			</when>
+			<when test="searchType=='writer'">
+				writer like #{searchWord}
+			</when>
+			<otherwise>
+				content like #{searchWord}
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+		<select id="getAllBoardWithCnt" resultType="boardVo">
+		select * from board where
+		<choose>
+			<when test="searchType=='title'">
+				title like #{searchWord} 
+			</when>
+			<when test="searchType=='writer'">
+				writer like #{searchWord}
+			</when>
+			<otherwise>
+				content like #{searchWord}
+			</otherwise>
+		</choose>
+		order by no limit #{startRowIndex}, #{viewPostCntPerPage}
+	</select>
+	
 
 </mapper>

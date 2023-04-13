@@ -27,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.springproj.domain.BoardImg;
 import com.springproj.domain.BoardVo;
 import com.springproj.domain.MemberVo;
+import com.springproj.domain.PagingInfo;
+import com.springproj.domain.SearchCriteria;
 import com.springproj.etc.UploadFileInfo;
 import com.springproj.etc.UploadFilesProc;
 import com.springproj.service.BoardService;
@@ -44,12 +46,23 @@ public class BoardController {
 	private List<UploadFileInfo> upFileList = new ArrayList<UploadFileInfo>();
 
 	@RequestMapping("listAll")
-	public void listAll(Model model) throws Exception {
-		System.out.println("controller : 게시판 목록 조회");
+	// defaultValue 를 주게 되면 쿼리스트링을 받지 않더라도 defalut 값으로 pageNo=1이 param 값으로 생성 된다.
+	public void listAll(Model model, @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+			@RequestParam(value = "viewPost", defaultValue = "3") int viewPostCnt,
+			@RequestParam(value = "searchType", defaultValue = "") String searchType,
+			@RequestParam(value = "searchWord", defaultValue = "") String searchWord) throws Exception {
 
-		List<BoardVo> lst = this.service.listAll();
+		SearchCriteria sc = new SearchCriteria(searchType, searchWord);
 
-		model.addAttribute("boardList", lst);
+		System.out.println("검색 : " + sc.toString());
+
+		System.out.println("controller : 게시판 목록 조회, 페이지 번호 : " + pageNo + ", 보여줄 글의 갯수 : " + viewPostCnt);
+
+		Map<String, Object> map = this.service.listAll(pageNo, viewPostCnt, sc);
+
+		model.addAttribute("boardList", (List<BoardVo>) map.get("boardList"));
+		model.addAttribute("pagingInfo", (PagingInfo) map.get("pagingInfo"));
+
 	}
 
 	// 호출될 땐 POST 방식 보다 GET 방식이 먼저 호출 된다.
@@ -193,6 +206,26 @@ public class BoardController {
 		this.upFileList.clear();
 
 		return "redirect:viewBoard?no=" + modifyBoard.getNo();
+	}
+
+	@RequestMapping("remBoard")
+	public String deleteBoardByNo(@RequestParam("no") int no) throws Exception {
+		System.out.println("삭제할 게시글 번호 : " + no);
+
+		int result = service.deleteBoardByNo(no);
+
+		System.out.println("삭제할 게시글 번호 : " + no);
+
+		System.out.println(result);
+
+		String redirectPage = "";
+		if (result == 1) {
+			redirectPage = "/board/listAll";
+		} else {
+			redirectPage = "/board/viewBoard?no=" + no;
+		}
+		return "redirect:" + redirectPage;
+
 	}
 
 }

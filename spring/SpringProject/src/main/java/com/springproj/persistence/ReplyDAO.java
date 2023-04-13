@@ -10,4 +10,7 @@ public interface ReplyDAO {
 	int insertReply(Replies reply)throws Exception;
 
 	List<Replies> selectAllReplies(int boardNo)throws Exception;
+	
+	//댓글 수정
+	int updateReply(Replies reply)throws Exception;
 }

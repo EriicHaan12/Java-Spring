@@ -9,6 +9,15 @@ public class Replies {
 	private String replier;
 	private String replytext;
 	private Timestamp postdate;
+	private int ref;
+
+	public int getRef() {
+		return ref;
+	}
+
+	public void setRef(int ref) {
+		this.ref = ref;
+	}
 
 	public Replies() {
 		super();

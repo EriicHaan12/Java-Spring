@@ -72,7 +72,7 @@
 				실행한다. -->
 			<mapping path="/board/writeBoard" /><!-- 게시판 글 쓰기 -->
 			<mapping path="/board/modiBoard" /><!-- 게시판 글 수정 -->
-			<mapping path="/board/remBoard" /><!-- 게시판 글 삭제 -->
+	 	<!-- <mapping path="/board/remBoard" /> 게시판 글 삭제 -->  
 		
 			<beans:ref bean="authenticationInterceptor" />
 

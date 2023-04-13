@@ -23,8 +23,56 @@
 	function goBoardDetail(no){
 		location.href='viewBoard?no='+no;
 	}
+		
+	function getVpc() {
+		let vpc = Number('${param.viewPost}');
+		if (vpc == '') {
+			vpc = 3;
+		} 
+		$(".viewPostCnt").val(vpc); // select 태그의 value값 변경
+	}
 	
-	console.log(${board.postDate} )
+	$(function(){
+		getVpc();
+		$(".viewPostCnt").change(function() {
+			let vpc = $(this).val();
+			location.href="listAll.bo?pageNo=${param.pageNo}&viewPost=" + vpc;
+		});
+	});
+	
+
+	function searchValid() {  
+		// 검색어가 입력 되지 않거나, sql injection 공격요소가 있다면 검색이 되지 않도록	
+		let sw = $("#searchWord").val();
+		if (sw.length == 0) {
+			alert("검색어를 입력하세요!");
+			return false;
+		} 
+		let expText = /[%=><]/;  // 데이터베이스에서 조건연산자에 해당
+		if (expText.test(sw) == true) {
+			alert("특수문자를 입력 할 수 없습니다.");
+			return false;
+		} 
+		const sql = new Array(
+			"or", "select", "insert", "update", "delete", "create", "alter", "drop", "exec", 
+			"union", "fetch", "declare", "truncate"
+		);
+		let regEx = "";
+		for (let i = 0; i < sql.length; i++) {
+			regEx = new RegExp(sql[i], "gi");
+			
+			if (regEx.test(sw) == true) {
+				alert("특정 문자로 검색할 수 없습니다");
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	
+	
+	
 </script>
 <style>
 .board {
@@ -78,7 +126,7 @@
 					</tr>
 				</thead>
 				<tbody>
-				
+
 					<c:forEach var="board" items="${boardList }">
 						<tr onclick="goBoardDetail(${board.no });">
 							<td>${board.no }</td>
@@ -92,9 +140,53 @@
 					</c:forEach>
 				</tbody>
 			</table>
+
+			<form class="searchBoard" action="listAll">
+				<select name="searchType">
+					<option value="">--검색어 선택--</option>
+					<option value="title">제목</option>
+					<option value="writer">글쓴이</option>
+					<option value="content">본문</option>
+				</select> <input type="text" name="searchWord" id="searchWord" />
+				<button type="submit" onclick="return searchValid();">검색</button>
+			</form>
+
+			${pagingInfo}
+			<div class="paging">
+				<ul class="pagination">
+					<c:if test="${pagingInfo.startNumOfCurrentPagingBlock > 1 }">
+						<li class="page-item"><a class="page-link"
+							href="/listAll?pageNo=${param.pageNo - 1 }&viewPost=${param.viewPost}&searchType=${param.searchType }&searchWord=${param.searchWord}">Previous</a></li>
+
+					</c:if>
+					<c:forEach var="i"
+						begin="${pagingInfo.startNumOfCurrentPagingBlock }"
+						end="${pagingInfo.endNumOfCurrentPagingBlock}" step="1">
+
+						<c:choose>
+							<c:when test="${pagingInfo.pageNo == i }">
+								<li class="page-item active"><a class="page-link"
+									href="/listAll?pageNo=${i }&viewPost=${param.viewPost}&searchType=${param.searchType }&searchWord=${param.searchWord}">${i }</a></li>
+							</c:when>
+							<c:otherwise>
+								<li class="page-item"><a class="page-link"
+									href="/listAll?pageNo=${i }&viewPost=${param.viewPost}&searchType=${param.searchType }&searchWord=${param.searchWord}">${i }</a></li>
+							</c:otherwise>
+						</c:choose>
+					</c:forEach>
+					<c:if test="${pagingInfo.pageNo <  pagingInfo.totalPageCnt}">
+						<li class="page-item"><a class="page-link"
+							href="/listAll?pageNo=${param.pageNo + 1 }&viewPost=${param.viewPost}&searchType=${param.searchType }&searchWord=${param.searchWord}">Next</a></li>
+					</c:if>
+				</ul>
+			</div>
+
+
+
 			<div class="btns">
 				<!-- 출력 날짜형식을 바꾸고 싶다면...  fmt:formatDate를 쓰자 -->
-				<button type="button" class="btn btn-secondary writeBtn" onclick="location.href='writeBoard';">글쓰기</button>
+				<button type="button" class="btn btn-secondary writeBtn"
+					onclick="location.href='writeBoard';">글쓰기</button>
 			</div>
 
 

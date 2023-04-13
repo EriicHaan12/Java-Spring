@@ -5,11 +5,13 @@ import java.util.List;
 import com.springproj.domain.BoardImg;
 import com.springproj.domain.BoardVo;
 import com.springproj.domain.MemberPointVo;
+import com.springproj.domain.PagingInfo;
+import com.springproj.domain.SearchCriteria;
 import com.springproj.etc.UploadFileInfo;
 
 public interface BoardDAO {
 	//게시판 전체 목록 조회
-	List<BoardVo> selectAllBoard()throws Exception;
+	List<BoardVo> selectAllBoard(PagingInfo pi)throws Exception;
 	
 	//신규 게시물 저장(파일은 제외한 나머지 데이터)
 	int insertNewBoard(BoardVo newBoard)throws Exception;
@@ -33,11 +35,22 @@ public interface BoardDAO {
 	List<BoardImg> selectUploadFile(int no)throws Exception;
 	
 //	//no번 게시물 삭제
-//	int deleteBoardByNo (int no)throws Exception;
+	int deleteBoardByNo (int no)throws Exception;
 	
 	//no번 게시물 수정
 	int updateBoard(BoardVo modiBoard)throws Exception;
 	
 	//no첨부 파일 삭제
 	int deleteBoardImg(int no)throws Exception;
+
+	//게시판 글의 갯수 가져오기
+	int getBoardCnt()throws Exception;
+
+	//검색어가 있을 때 검색된 게시글의 글 갯수 가져오기
+	int boardCntWithSearch(SearchCriteria sc)throws Exception;
+
+	//검색어가 있을 때 검색된 글을 페이징 하여 가저오기
+	List<BoardVo> selectallBoardWithSearch(PagingInfo pi, SearchCriteria sc)throws Exception;
+
+
 }

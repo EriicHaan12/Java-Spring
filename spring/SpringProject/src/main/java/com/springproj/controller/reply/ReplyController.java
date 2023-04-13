@@ -27,7 +27,9 @@ public class ReplyController {
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public ResponseEntity<String> saveReply(@RequestBody Replies reply) {
 		System.out.println(reply.toString() + "댓글 등록하자!");
+		
 		ResponseEntity<String> result = null;
+		
 		if (reply.getReplier().equals("")) {
 			// 댓글 작성시 로그인을 안했을 경우
 			result = new ResponseEntity<String>("notPermitted", HttpStatus.BAD_REQUEST);
@@ -41,27 +43,43 @@ public class ReplyController {
 			}
 			result = new ResponseEntity<String>("success", HttpStatus.OK);
 		}
+		
 		return result;
 	}
 
 	@RequestMapping(value = "/all/{boardNo}", method = RequestMethod.GET)
-	public ResponseEntity<List<Replies>> getAllReplies(
-			@PathVariable("boardNo") int boardNo) {
-		ResponseEntity<List<Replies>> result =null;
-		System.out.println(boardNo+ "번 글의 댓글을 전부 가져오기");
-		
+	public ResponseEntity<List<Replies>> getAllReplies(@PathVariable("boardNo") int boardNo) {
+		ResponseEntity<List<Replies>> result = null;
+		System.out.println(boardNo + "번 글의 댓글을 전부 가져오기");
+
 		try {
-			List<Replies> lst =  service.getAllReplies(boardNo);
-			//전체 댓글 리스트가 담겨져있는 lst를 반환하고 ,상태 코드 HttpStatus.OK도 같이 반환 
-			result = new ResponseEntity<List<Replies>>(lst,HttpStatus.OK);
-			
+			List<Replies> lst = service.getAllReplies(boardNo);
+			// 전체 댓글 리스트가 담겨져있는 lst를 반환하고 ,상태 코드 HttpStatus.OK도 같이 반환
+			result = new ResponseEntity<List<Replies>>(lst, HttpStatus.OK);
+
 		} catch (Exception e) {
-			
-			//빈거라 내용이 없기 때문에, 보낼 메세지는 빼주고 상태 코드만 반환
-	result = new ResponseEntity<List<Replies>>(HttpStatus.CONFLICT);
-			
+
+			// 빈거라 내용이 없기 때문에, 보낼 메세지는 빼주고 상태 코드만 반환
+			result = new ResponseEntity<List<Replies>>(HttpStatus.CONFLICT);
+
 		}
-		
-		return 	result;
+
+		return result;
 	}
+
+	@RequestMapping(value = "/{replyNo}", method = RequestMethod.PUT)
+	public ResponseEntity<String> modifyReply(@PathVariable("replyNo") int replyNo, @RequestBody Replies reply) {
+		System.out.println("수정할 댓글 번호 : " + replyNo + ", 수정 내용 : " + reply.toString());
+		ResponseEntity<String> result = null;
+
+		try {
+			if (service.modifyReply(reply)) {
+				result = new ResponseEntity<String>("success", HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			result = new ResponseEntity<String>("fail", HttpStatus.CONFLICT);
+		}
+		return result;
+	}
+
 }

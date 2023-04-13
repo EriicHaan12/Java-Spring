@@ -19,14 +19,16 @@ public class ReplyDAOImpl implements ReplyDAO {
 
 	@Override
 	public int insertReply(Replies reply) throws Exception {
-
 		return ses.insert(ns + ".insertReply", reply);
 	}
 
 	@Override
 	public List<Replies> selectAllReplies(int boardNo) throws Exception {
-		
-		return ses.selectList(ns+".selectAllReplies", boardNo);
+		return ses.selectList(ns + ".selectAllReplies", boardNo);
+	}
 
+	@Override
+	public int updateReply(Replies reply) throws Exception {
+		return ses.update(ns + ".updateReply", reply);
 	}
 }

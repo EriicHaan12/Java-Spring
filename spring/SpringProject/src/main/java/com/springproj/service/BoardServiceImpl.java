@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.springproj.domain.BoardImg;
 import com.springproj.domain.BoardVo;
 import com.springproj.domain.MemberPointVo;
+import com.springproj.domain.PagingInfo;
+import com.springproj.domain.SearchCriteria;
 import com.springproj.etc.UploadFileInfo;
 import com.springproj.persistence.BoardDAO;
 
@@ -24,10 +26,57 @@ public class BoardServiceImpl implements BoardService {
 	private BoardDAO dao; // BoardDAO 객체 주입
 
 	@Override
-	public List<BoardVo> listAll() throws Exception {
+	public Map<String, Object> listAll(int pageNo, int viewPostCnt, SearchCriteria sc) throws Exception {
 		System.out.println("서비스단: 게시판 목록 조회");
 
-		return this.dao.selectAllBoard();
+		PagingInfo pi = getPagingInfo(pageNo, viewPostCnt, sc);
+
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+
+			List<BoardVo> lst = null;
+		
+		if (!sc.getSearchWord().equals("")) {
+			lst =this.dao.selectallBoardWithSearch(pi, sc);
+		}else if (sc.getSearchWord().equals("") || sc.getSearchWord() == null) { 
+			lst = this.dao.selectAllBoard(pi);
+		}
+		
+		returnMap.put("boardList", this.dao.selectAllBoard(pi));
+		returnMap.put("pagingInfo", pi);
+
+		return returnMap;
+	}
+
+	private PagingInfo getPagingInfo(int pageNo, int viewPostCnt, SearchCriteria sc) throws Exception {
+
+		PagingInfo pi = new PagingInfo();
+
+		pi.setViewPostCntPerPage(viewPostCnt);// 1페이지당 보여줄 글의 갯수
+		pi.setPageNo(pageNo);// 요청된 페이지 번호
+		int totalPostCnt = dao.getBoardCnt(); // 총 게시글 수 가져오는 메서드
+		
+		//System.out.println("총 게시물 갯수 : " + totalPostCnt);
+
+		if (!sc.getSearchWord().equals("")) {// 검색어가 있을 때
+			pi.setTotalPostCnt(dao.boardCntWithSearch(sc));// 검색된 (전체)글의 갯수 
+			
+			
+		} else if (sc.getSearchWord().equals("") || sc.getSearchWord() == null) { // 검색어가 없을 때
+			pi.setTotalPostCnt(totalPostCnt);// 전체 글의 갯수를 pi 객체에 넣기
+		}
+
+		pi.setTotalPageCnt(pi.getTotalPostCnt(), pi.getViewPostCntPerPage());// 전체 페이지 수
+		pi.setStartRowIndex(pi.getPageNo());// 현재 페이지 번호에서 보여줘야 할 row index
+
+		// ====================
+		// pagination을 위한 코드
+		pi.setPageBlockOfCurrentPage(pi.getPageNo());// 현재 페이지가 속한 페이징 블럭
+		// 현재 페이징 블럭의 시작 번호
+		pi.setStartNumOfCurrentPagingBlock(pi.getPageBlockOfCurrentPage());
+		// 현재 페이징 블럭의 끝번호
+		pi.setEndNumOfCurrentPagingBlock(pi.getStartNumOfCurrentPagingBlock());
+
+		return pi;
 	}
 
 	@Override
@@ -82,6 +131,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
+	// 수정시 이미지 삭제
 	public int deleteBoard(int no) throws Exception {
 
 		System.out.println("서비스단 삭제할 글번호 : " + no);
@@ -110,6 +160,13 @@ public class BoardServiceImpl implements BoardService {
 		}
 
 		return true;
+	}
+
+	@Override
+	public int deleteBoardByNo(int no) throws Exception {
+		System.out.println("서비스단 삭제할 글번호 : " + no);
+
+		return dao.deleteBoardByNo(no);
 	}
 
 }

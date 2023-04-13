@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import com.springproj.domain.BoardImg;
 import com.springproj.domain.BoardVo;
 import com.springproj.domain.MemberPointVo;
+import com.springproj.domain.PagingInfo;
+import com.springproj.domain.SearchCriteria;
 import com.springproj.etc.UploadFileInfo;
 
 @Repository // 현재 클래스가 DAO 단임을 명시
@@ -23,10 +25,10 @@ public class BoardDAOImpl implements BoardDAO {
 	private static String ns = "com.springproj.mappers.boardMapper";
 
 	@Override
-	public List<BoardVo> selectAllBoard() throws Exception {
+	public List<BoardVo> selectAllBoard(PagingInfo pi) throws Exception {
 		System.out.println("DAO단 : 게시판 목록 조회");
 
-		return session.selectList(ns + ".getAllBoards");
+		return session.selectList(ns + ".getAllBoards", pi);
 	}
 
 	@Override
@@ -80,12 +82,6 @@ public class BoardDAOImpl implements BoardDAO {
 		return session.selectList(ns + ".selectUploadFile", no);
 	}
 
-//	@Override
-//	public int deleteBoardByNo(int no) throws Exception {
-//		System.out.println("DAO 단의 no : " + no);
-//		return session.delete(ns + ".deleteBoardByNo", no);
-//	}
-//
 	@Override
 	public int updateBoard(BoardVo modiBoard) throws Exception {
 
@@ -94,8 +90,46 @@ public class BoardDAOImpl implements BoardDAO {
 
 	@Override
 	public int deleteBoardImg(int no) throws Exception {
+
+		return session.delete(ns + ".deleteBoardImg", no);
+	}
+
+	@Override
+	public int deleteBoardByNo(int no) throws Exception {
+		System.out.println("DAO 단의 no : " + no);
+
+		return session.delete(ns + ".deleteBoardByNo", no);
+	}
+
+	@Override
+	public int getBoardCnt() throws Exception {
+
+		return session.selectOne(ns + ".getTotalBoardCnt");
+	}
+
+	@Override
+	public int boardCntWithSearch(SearchCriteria sc) throws Exception {
+	
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("searchType", sc.getSearchType());
+		param.put("searchWord", "%" + sc.getSearchWord() + "%");
 		
-		return session.delete(ns+".deleteBoardImg",no);
+		
+		return session.selectOne(ns + ".getTotalBoardCntWithSearch", param);
+	}
+
+	@Override
+	public List<BoardVo> selectallBoardWithSearch(PagingInfo pi, SearchCriteria sc) throws Exception {
+
+		Map<String, Object> param = new HashMap<String, Object>();
+		
+		param.put("searchType", sc.getSearchType());
+		param.put("searchWord", "%" + sc.getSearchWord() + "%");
+		
+		param.put("startRowIndex", pi.getStartRowIndex());
+		param.put("viewPostCntPerPage", pi.getViewPostCntPerPage());
+		
+		return session.selectList(ns + ".getAllBoardWithCnt", param);
 	}
 
 }

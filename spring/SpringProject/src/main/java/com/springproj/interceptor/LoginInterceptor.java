@@ -37,6 +37,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		HttpSession ses = request.getSession();
 		// 여기서 가져온 ModelMap은 이전 Home컨트롤러 단에서 바인딩한 Model 객체를 가지고 있는 객체이다
 		ModelMap mm = modelAndView.getModelMap();
+		
 		MemberVo loginMember = (MemberVo) mm.get("loginMember");
 		if (loginMember != null) {
 			System.out.println("로그인 성공");

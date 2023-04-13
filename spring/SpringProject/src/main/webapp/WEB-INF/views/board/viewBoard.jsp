@@ -15,18 +15,19 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <title>게시판 상세 조회 페이지</title>
 <script>
+
+function deleteBoard() {
+	console.log('${board.no}');
+	location.href ="remBoard?no="+${board.no};
+}
+
+	
 	$(function() {
-		getAllReplies(); // 현재 글의 모든 댓글 가져오기.
-	})
+		//getAllReplies(); // 현재 글의 모든 댓글 가져오기.
+		
+	});
 
-	function deleteBoard() {
-		location.href = "remBoard?no=" + $
-		{
-			board.no
-		}
-		;
-	}
-
+	
 	function saveReply() {
 		let boardNo = '${board.no}';
 		let replytext = $("#replyContent").val();
@@ -67,10 +68,8 @@
 			}
 		});
 	}
-
 	function getAllReplies() {
 		let boardNo = '${board.no}';
-
 		$.ajax({
 			url : "/reply/all/" + boardNo,
 			type : "get",
@@ -86,30 +85,128 @@
 		});
 
 	}
-
 	function displayAllReply(data) {
 
-		let output = "<div class='list-group replies'>";
+		let output = "<ul class='list-group replies'>";
 
-		$.each(data, function(i, item) {
-							output += "<a id='"+item.replyNo+"' href='#' class='list-group-item list-group-item-action'>";
-							output += "<div>" + item.replytext + "</div>";
-							output += "<div><span class='writer'>"+ item.replier + "</span>";
-							output += "<span class='postdate'>"+ new Date(item.postdate).toLocaleString()+ "</span></div>";
-							output += "<div class='icons'><img src='/resources/images/modify.png' class='icon'onclick='replyModi("+item.replyNo+");' />";
-							output += "<img src='/resources/images/remove.png' class='icon' onclick='replyRemove("+item.replyNo+");'/></div>";
-							output += "</a>";
+		$.each(data,function(i, item) {
+							output += "<li id='replyBody"+item.replyNo+"' class='list-group-item'>";
+							if(item.replyNo!= item.ref){
+								output+="<img src='/resources/images/reply.png' width:'15px'/>"
+							}
+							output += "<div id='replyText"+item.replyNo+"' class='reply'>"+ item.replytext + "</div>";
+							output += "<div><span id='reply"+item.replyNo+"' class='writer'>"+ item.replier + "</span>";
+							output += "<span class='postdate'>"+ elapesdTime(item.postdate)+ "</span></div>";
+							output += "<div class='icons'><img src='/resources/images/modify.png' class='icon'onclick='replyModi("+ item.replyNo+ ");' />";
+							output += "<img src='/resources/images/remove.png' class='icon' onclick='replyRemove("+ item.replyNo + ");'/></div></li>";
 						});
-		output += "</div>";
+		output += "</ul>";
 		$(".allReplies").html(output);
+		
+		function elapesdTime(date){
+			let postDate = new Date(date); // 넘겨진 시간(댓글 작성 날짜)
+			let current = new Date();// 현재 시간
+			
+			let diff = (current-postDate)/1000; // 시간차를 s 단위로 
+			let times = [
+				//{name : "년", ms : 60*60*24*365 },
+				//{name : "개월", ms : 60*60*24*30 },
+				{name : "일", ms : 60*60*24 },
+				{name : "시간", ms : 60*60 },
+				{name : "분", ms : 60}
+			];
+			for(let val of times){
+				// 글 작성된 시간과 현재시간의 초단위 시간차(val.ms)으로 나누어봄
+				let betweenTime = Math.floor(diff / val.ms);
+				
+				if(betweenTime> 0){ //나눈것이 시차가 난다?(나눈 값이 몫이 있다)
+					if(diff>60*60*24){
+						
+						return postDate.toLocaleString();
+					}
+						
+						return betweenTime+ val.name + "전";
+				}	
+			}
+			return "방금 전";
+		}
+		
+	}
+	//댓글 수정
+	function replyModi(replyNo) {
+		console.log(replyNo);
+		
+		let user = '${sessionScope.loginMember.userId}';
+		console.log(user);
+		
+		console.log($("#reply"+replyNo).html());
+		
+		if (user ==='') {
+			alert("댓글 수정은 로그인 해야 이용 가능 합니다.");
+			return;
+		} else {
+			if (user !== $("#reply" + replyNo).html()) {
+				alert("댓글 수정은 본인 글만 가능 합니다.");
+				return;
+			} else {
+				let inputArea = '<textarea class="form-control" rows="5" id="modiContent'+replyNo+'">'+$("#replyText"+replyNo).html()+'</textarea>'
+					 +'<button type="button" class="btn btn-info" onclick="modiReply('+replyNo+');">댓글수정</button>';
+				 +'<button type="button" class="btn btn-danger" onclick="modiCancel();">취소</button>';
+
+				$("#replyBody" + replyNo).html(inputArea);
+			}
+		}
 	}
 	
-	function replyModi(replyNo){
+	function modiReply(replyNo){
 		console.log(replyNo);
+		let replytext = $("#modiContent"+replyNo).val();
+		let reply={
+				"replyNo" : replyNo,
+				"replytext": replytext
+		};
+		console.log(JSON.stringify(reply));
+		
+		$.ajax({
+			url : "/reply/" + replyNo,
+			type : "put",
+			async : false,
+			headers : {
+				//헤더에도 마찬가지로 json형태로 보내겠다고 명시
+				"Content-Type" : "application/json",
+				//PUT,DELETE,PATH 등의 REST HTTP Method 가 동작 하지 않는 과거의 웹 브라우저에서는 "post"방식으로 동작하게끔 처리
+				"X-HTTP-Method-Override" : "POST"
+			//데이터를 전송할 때 packet Header에 추가 할 내용
+			},
+			//객체를 JSON화 시켜주는 메서드
+			//전송할 데이터를 json 문자열로 바꾸어 전송
+			data : JSON.stringify(reply),
+			dataType : "text", //수신받을 데이터 타입
+			success : function(data) {
+				console.log(data);
+				if(data=="success"){
+					getAllReplies();
+				}
+			},
+			error : function(data) {
+				console.log(data);
+				alert("댓글 수정이 실패 하였습니다.");
+				getAllReplies();
+			}
+		});
+	
 	}
-	function replyRemove(replyNo){
-		console.log(replyNo);	
+	
+	function modiCancel(){
+		getAllReplies();
+			
 	}
+	
+	function replyRemove(replyNo) {
+		location.href='';
+	}
+	
+	
 	
 </script>
 <style type="text/css">
@@ -178,32 +275,22 @@
 						<!-- 업로드 파일이 이미지가 아닐 때 -->
 						<a href="/resources/upfiles/${file.fileName }">업로드 파일</a>
 					</c:when>
-
 					<c:otherwise>
 						<!-- 업로드 파일이 이미지 일 때 -->
 						<img src="/resources/upfiles/${file.fileName }">
 					</c:otherwise>
-
 				</c:choose>
-
 			</c:forEach>
 		</div>
-
 		<div class="btns">
-
 			<button type="button" class="btn btn-success"
 				onclick="location.href='modiBoard?no=${board.no}&writer=${board.writer}'">수정</button>
-			<button type="button" class="btn btn-success" onclick="">삭제</button>
-
+			<button class="btn btn-success" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" >삭제</button>
+			<!-- -->
 			<!-- <button type="button" class="btn btn-success" onclick="location.href='modiBoard?no=${param.no}';">수정</button> -->
-
-
-
 			<button type="button" class="btn btn-warning"
-				onclick="location.href=listAll;">목록으로</button>
+				onclick="location.href='listAll';">목록으로</button>
 		</div>
-
-
 		<div class="replyInputDiv">
 			<label for="content">댓글 : </label>
 			<textarea class="form-control" rows="5" id="replyContent"></textarea>
@@ -213,5 +300,26 @@
 		<div class="allReplies" style="margin-top: 10px; padding: 5px;"></div>
 	</div>
 	<jsp:include page="../footer.jsp"></jsp:include>
+
+
+	<!-- 삭제 버튼 클릭시 나오는 모달-->
+	
+	<div class="modal" id="myModal">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">${board.no }번글을삭제하시겠습니까?</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">삭제를 원하시면 "예" 버튼을 눌러주세요...</div>
+	
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger"
+						data-bs-dismiss="modal" onclick="deleteBoard();" >예</button>
+				</div>
+			</div>
+		</div>
+	</div>
+ 
 </body>
 </html>
