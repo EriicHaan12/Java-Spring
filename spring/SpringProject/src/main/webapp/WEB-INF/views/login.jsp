@@ -9,7 +9,15 @@
     <script src="/resources/js/commonJS.js"></script>
 
 
+  <script type="text/javascript">
   
+  function rememberLogin(){
+	  if($("#remember").is(":checked") == true){
+		  alert("자동 로그인 동작");
+	  }
+  }
+  
+  </script>
   </head>
   <body>
     <jsp:include page="header.jsp"></jsp:include>
@@ -26,9 +34,10 @@
           <div class="errMsg"></div>
         </div>
 
-        <div class="form-check"><input class="form-check-input" type="checkbox" id="remember" name="remember" /> <label class="form-check-label"> 자동로그인</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="remember" name="remember" onclick="rememberLogin();"/>
+         <label class="form-check-label"> 자동로그인</label></div>
 
-        <button type="submit" class="btn btn-success">로그인</button>
+        <button type="submit" class="btn btn-success" >로그인</button>
         <button type="reset" class="btn btn-warning">취소</button>
       </form>
       <jsp:include page="footer.jsp"></jsp:include>

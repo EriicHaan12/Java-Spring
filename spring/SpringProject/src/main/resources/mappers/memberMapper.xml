@@ -7,9 +7,19 @@
 
 	<select id="login" resultType="com.springproj.domain.MemberVo">
 
-		select* from member where userId = #{userId} and
+		select* from member where userId =
+		#{userId} and
 		userPwd=sha1(md5(#{userPwd}));
 	</select>
 
+	<update id="updateRemember">
+		update member set sesId = #{sesId},
+		seslimit=#{seslimit} where userId = #{userId}
+	</update>
+
+	<select id="selectRemember"
+		resultType="com.springproj.domain.MemberVo">
+		select * from member where sesId = #{sesId} and seslimit > now();
+	</select>
 
 </mapper>
