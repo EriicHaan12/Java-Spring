@@ -13,6 +13,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.springproj.domain.BoardImg;
+import com.springproj.domain.BoardLikeDTO;
 import com.springproj.domain.BoardVo;
 import com.springproj.domain.MemberVo;
 import com.springproj.domain.PagingInfo;
@@ -159,11 +161,12 @@ public class BoardController {
 		// 리턴된 Map으로 부터 다시 원래 객체를 얻어옴
 		BoardVo board = (BoardVo) map.get("board");
 		List<BoardImg> lst = (List<BoardImg>) map.get("upFiles");
+		List<BoardLikeDTO> listList = (List<BoardLikeDTO>) map.get("likeList");
 
 		// 바인딩
 		model.addAttribute("board", board);
 		model.addAttribute("upFiles", lst);
-
+		model.addAttribute("listList", listList);
 	}
 
 	@RequestMapping("modiBoard")
@@ -226,6 +229,25 @@ public class BoardController {
 		}
 		return "redirect:" + redirectPage;
 
+	}
+
+	@RequestMapping(value = "like", method = RequestMethod.POST)
+	public ResponseEntity<String> likeBoard(@RequestParam("isLike") boolean isLike,
+			@RequestParam("boardNo") int boardNo, @RequestParam("who") String who) {
+
+		System.out.println(boardNo + "번 글을 좋아요 한 수 : " + isLike);
+
+		BoardLikeDTO dto = new BoardLikeDTO(0, who, boardNo, isLike);
+		ResponseEntity<String> result = null;
+
+		try {
+			int likeCount = service.likeProc(dto);
+			result = new ResponseEntity<String>(likeCount + "", HttpStatus.OK);
+		} catch (Exception e) {
+			result = new ResponseEntity<String>(e.getMessage(), HttpStatus.CONFLICT);
+		}
+
+		return result;
 	}
 
 }

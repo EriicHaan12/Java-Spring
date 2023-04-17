@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.springproj.domain.BoardImg;
+import com.springproj.domain.BoardLikeDTO;
 import com.springproj.domain.BoardVo;
 import com.springproj.domain.MemberPointVo;
 import com.springproj.domain.PagingInfo;
@@ -33,14 +34,14 @@ public class BoardServiceImpl implements BoardService {
 
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 
-			List<BoardVo> lst = null;
-		
+		List<BoardVo> lst = null;
+
 		if (!sc.getSearchWord().equals("")) {
-			lst =this.dao.selectallBoardWithSearch(pi, sc);
-		}else if (sc.getSearchWord().equals("") || sc.getSearchWord() == null) { 
+			lst = this.dao.selectallBoardWithSearch(pi, sc);
+		} else if (sc.getSearchWord().equals("") || sc.getSearchWord() == null) {
 			lst = this.dao.selectAllBoard(pi);
 		}
-		
+
 		returnMap.put("boardList", this.dao.selectAllBoard(pi));
 		returnMap.put("pagingInfo", pi);
 
@@ -54,13 +55,12 @@ public class BoardServiceImpl implements BoardService {
 		pi.setViewPostCntPerPage(viewPostCnt);// 1페이지당 보여줄 글의 갯수
 		pi.setPageNo(pageNo);// 요청된 페이지 번호
 		int totalPostCnt = dao.getBoardCnt(); // 총 게시글 수 가져오는 메서드
-		
-		//System.out.println("총 게시물 갯수 : " + totalPostCnt);
+
+		// System.out.println("총 게시물 갯수 : " + totalPostCnt);
 
 		if (!sc.getSearchWord().equals("")) {// 검색어가 있을 때
-			pi.setTotalPostCnt(dao.boardCntWithSearch(sc));// 검색된 (전체)글의 갯수 
-			
-			
+			pi.setTotalPostCnt(dao.boardCntWithSearch(sc));// 검색된 (전체)글의 갯수
+
 		} else if (sc.getSearchWord().equals("") || sc.getSearchWord() == null) { // 검색어가 없을 때
 			pi.setTotalPostCnt(totalPostCnt);// 전체 글의 갯수를 pi 객체에 넣기
 		}
@@ -123,9 +123,15 @@ public class BoardServiceImpl implements BoardService {
 
 		List<BoardImg> upFiles = dao.selectUploadFile(no);
 
+		//4) no번 글을 좋아요 한 유저 리스트를 가져오기
+		List<BoardLikeDTO> likeList= dao.getLikeList(no);
+		
+		
 		Map<String, Object> returnMap = new HashMap<String, Object>();
+		
 		returnMap.put("board", board);
 		returnMap.put("upFiles", upFiles);
+		returnMap.put("likeList", likeList);
 
 		return returnMap;
 	}
@@ -165,8 +171,35 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public int deleteBoardByNo(int no) throws Exception {
 		System.out.println("서비스단 삭제할 글번호 : " + no);
-
 		return dao.deleteBoardByNo(no);
 	}
 
+	@Override
+	@Transactional
+	public int likeProc(BoardLikeDTO dto) throws Exception {
+		boolean result =false;
+		
+		int tmp = -1;
+		int acc = 0;
+		
+		if (dto.isLike()) {
+			// boardlike 테이블에 insert (좋아요 누름)
+			tmp = dao.insertBoardLike(dto);
+			acc = 1;
+		} else {
+			// boardlike 테이블에 delete(좋아요 취소)
+			tmp = dao.deleteBoardLike(dto);
+			acc = -1;
+		}
+		// likeCount를 update
+		int tmp2 = dao.addLikeCount(dto.getBoardNo(), acc);
+		
+		int likeCount= 0;
+		if (tmp == 1 && tmp2 == 1) {
+			//boardNo 번글의 likeCount 가져오기
+			 likeCount=	dao.getLikeCountByBoardNo(dto.getBoardNo());
+		}
+		return likeCount;
+	}
+	
 }

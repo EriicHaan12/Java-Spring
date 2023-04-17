@@ -92,15 +92,16 @@ public class HomeController {
 
 		//4) 유저가 로그인을 하여 활동하다가 로그아웃을 눌렀을 경우 쿠키가 있다면, 쿠키 삭제
 			Cookie sesCookie = WebUtils.getCookie(req, "ses");
-			sesCookie.setMaxAge(0); // 만료 시키기
-
-			res.addCookie(sesCookie);
 			
+			if(sesCookie!= null) {
+				sesCookie.setMaxAge(0); // 만료 시키기, 쿠키 삭제
+				res.addCookie(sesCookie);	
+			}
 			
 		ses.removeAttribute("loginMember");
 		ses.removeAttribute("returnPath");
 		ses.invalidate(); // 무효화 시키기
-
+		
 		String uri = req.getRequestURI();
 		System.out.println("로그아웃 할 때 uri : " + uri);
 		return "redirect:/"; // 로그아웃 하면 index.jsp 로 redirect 강제 이동 시키기.

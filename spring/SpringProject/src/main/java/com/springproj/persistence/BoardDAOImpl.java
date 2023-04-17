@@ -10,6 +10,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import com.springproj.domain.BoardImg;
+import com.springproj.domain.BoardLikeDTO;
 import com.springproj.domain.BoardVo;
 import com.springproj.domain.MemberPointVo;
 import com.springproj.domain.PagingInfo;
@@ -109,12 +110,11 @@ public class BoardDAOImpl implements BoardDAO {
 
 	@Override
 	public int boardCntWithSearch(SearchCriteria sc) throws Exception {
-	
+
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("searchType", sc.getSearchType());
 		param.put("searchWord", "%" + sc.getSearchWord() + "%");
-		
-		
+
 		return session.selectOne(ns + ".getTotalBoardCntWithSearch", param);
 	}
 
@@ -122,14 +122,50 @@ public class BoardDAOImpl implements BoardDAO {
 	public List<BoardVo> selectallBoardWithSearch(PagingInfo pi, SearchCriteria sc) throws Exception {
 
 		Map<String, Object> param = new HashMap<String, Object>();
-		
+
 		param.put("searchType", sc.getSearchType());
 		param.put("searchWord", "%" + sc.getSearchWord() + "%");
-		
+
 		param.put("startRowIndex", pi.getStartRowIndex());
 		param.put("viewPostCntPerPage", pi.getViewPostCntPerPage());
-		
+
 		return session.selectList(ns + ".getAllBoardWithCnt", param);
+	}
+
+	@Override
+	public int insertBoardLike(BoardLikeDTO dto) throws Exception {
+
+		return session.insert(ns + ".insertBoardLike", dto);
+	}
+
+	@Override
+	public int deleteBoardLike(BoardLikeDTO dto) throws Exception {
+
+		return session.delete(ns + ".deleteBoardLike", dto);
+	}
+
+	@Override
+	public int addLikeCount(int boardNo, int acc) throws Exception {
+
+		Map<String, Object> param = new HashMap<String, Object>();
+
+		param.put("boardNo", boardNo);
+		param.put("acc", acc);
+
+		return session.update(ns + ".updateLikeCount", param);
+
+	}
+
+	@Override
+	public int getLikeCountByBoardNo(int boardNo) throws Exception {
+
+		return session.selectOne(ns + ".getLikeCount", boardNo);
+	}
+
+	@Override
+	public List<BoardLikeDTO> getLikeList(int no) throws Exception {
+
+		return session.selectList(ns + ".getLikeList", no);
 	}
 
 }

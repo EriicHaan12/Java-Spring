@@ -95,13 +95,13 @@
 			</otherwise>
 		</choose>
 	</select>
-	
-	
-		<select id="getAllBoardWithCnt" resultType="boardVo">
+
+
+	<select id="getAllBoardWithCnt" resultType="boardVo">
 		select * from board where
 		<choose>
 			<when test="searchType=='title'">
-				title like #{searchWord} 
+				title like #{searchWord}
 			</when>
 			<when test="searchType=='writer'">
 				writer like #{searchWord}
@@ -112,6 +112,25 @@
 		</choose>
 		order by no limit #{startRowIndex}, #{viewPostCntPerPage}
 	</select>
-	
+
+	<insert id="insertBoardLike">
+		insert into boardlike(boardNo, who) values(#{boardNo}, #{who})
+	</insert>
+
+	<delete id="deleteBoardLike">
+		delete from boardlike where boardNo = #{boardNo} and who = #{who}
+	</delete>
+
+	<update id="updateLikeCount">
+		update board set likeCount = likeCount + #{acc} where no = #{boardNo}
+	</update>
+
+	<select id="getLikeCount" resultType="int">
+		select likeCount from board where no = #{boardNo}
+	</select>
+
+	<select id="getLikeList" resultType="com.springproj.domain.BoardLikeDTO">
+		select * from boardlike where boardNo =#{boardNo}
+	</select>
 
 </mapper>

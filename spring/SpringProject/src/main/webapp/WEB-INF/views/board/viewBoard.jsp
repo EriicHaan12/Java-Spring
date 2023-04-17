@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
+
 <html>
 <head>
 <meta charset="UTF-8" />
@@ -13,6 +14,10 @@
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 <title>게시판 상세 조회 페이지</title>
 <script>
 
@@ -20,13 +25,48 @@ function deleteBoard() {
 	console.log('${board.no}');
 	location.href ="remBoard?no="+${board.no};
 }
-
-	
 	$(function() {
-		//getAllReplies(); // 현재 글의 모든 댓글 가져오기.
-		
-	});
-
+		getAllReplies(); // 현재 글의 모든 댓글 가져오기.
+			    $( "i" ).click(function() {
+					let user = '${sessionScope.loginMember.userId}';
+					if (user ==='') {
+						alert("좋아요는 로그인 해야 이용 가능 합니다.");
+						return false;
+					} else {
+			   let isLike = $(this).attr("class")+"";
+			   console.log(isLike);
+			    if(isLike==='press'){
+			    	likeClicked(false, user);
+			    	}else{
+			    		likeClicked(true, user);
+			    	}
+			    $( "i,span,likeSpan" ).toggleClass( "press", 1000 );
+					}
+				});
+		});
+	function likeClicked(isLike, user){
+			$.ajax({
+				url : "/board/like",
+				type : "post",
+				dataType : "text", //수신받을 데이터 타입
+				data:{
+					"isLike" : isLike,
+					"boardNo": '${board.no}',
+					"who" : user
+				},
+				success : function(data) {
+					console.log(data);
+					$("#likeCount").val(data); // 좋아요 갯수 넣기
+				},
+				error: function(data){
+					console.log(data);
+				}
+			});
+	}
+	
+	
+	
+	
 	
 	function saveReply() {
 		let boardNo = '${board.no}';
@@ -37,7 +77,6 @@ function deleteBoard() {
 			"replier" : replier,
 			"replytext" : replytext
 		};
-
 		console.log(JSON.stringify(reply));
 		$.ajax({
 			url : "/reply",
@@ -208,15 +247,17 @@ function deleteBoard() {
 	
 	
 	
+	
 </script>
+
 <style type="text/css">
-.writer {
+span.writer {
 	float: right;
 	margin-top: 4px;
 	margin-right: 3px;
 }
 
-.postdate {
+span.postdate {
 	margin-left: 4px;
 }
 
@@ -228,6 +269,200 @@ function deleteBoard() {
 .icon {
 	width: 18px;
 	margin-left: 5px;
+}
+
+body {
+	margin: 0;
+	text-align: center;
+	font-family: 'open sans', sans-serif;
+	background: #ddd;
+	height: 100%;
+}
+
+.likeDiv {
+	height: 100px;
+	margin: 0 auto;
+	position: relative;
+}
+
+i {
+	cursor: pointer;
+	padding: 10px 12px 8px;
+	background: #fff;
+	border-radius: 50%;
+	display: inline-block;
+	margin: 0 0 15px;
+	color: #aaa;
+	transition: .2s;
+}
+
+i:hover {
+	color: #666;
+}
+
+i:before {
+	font-family: fontawesome;
+	content: '\f004';
+	font-style: normal;
+}
+
+span.likeSpan {
+	position: absolute;
+	bottom: 70px;
+	left: 0;
+	right: 0;
+	visibility: hidden;
+	transition: .6s;
+	z-index: -2;
+	font-size: 2px;
+	color: transparent;
+	font-weight: 400;
+}
+
+i.press {
+	animation: size .4s;
+	color: #e23b3b;
+}
+
+#likeSpan.press {
+	bottom: 120px;
+	font-size: 14px;
+	visibility: visible;
+	animation: fade 1s;
+}
+
+@
+keyframes fade { 0% {
+	color: #transparent;
+}
+
+50
+
+
+
+
+%
+{
+color
+
+
+
+
+:
+
+
+
+
+#e23b3b
+
+
+;
+}
+100
+
+
+
+
+%
+{
+color
+
+
+
+
+:
+
+
+
+
+#transparent
+
+
+;
+}
+}
+@
+keyframes size { 0% {
+	padding: 10px 12px 8px;
+}
+50
+
+
+
+
+%
+{
+padding
+
+
+
+
+:
+
+
+
+
+14px
+
+
+
+
+16px
+
+
+
+
+12px
+
+
+;
+margin-top
+
+
+
+
+:
+
+
+
+
+-4px
+
+
+;
+}
+100
+
+
+
+
+%
+{
+padding
+
+
+
+
+:
+
+
+
+
+10px
+
+
+
+
+12px
+
+
+
+
+8px
+
+
+;
+}
 }
 </style>
 </head>
@@ -250,17 +485,51 @@ function deleteBoard() {
 				class="form-control" id="title" value="${board.postDate }" readonly />
 		</div>
 
+
+		<div class="mb-3 mt-3">
+			<label for="title">조회수 : </label> <input type="text"
+				class="form-control" id="readCount" value="${board.readCount }"
+				readonly />
+		</div>
+		
+		<div class="mb-3 mt-3">
+			<label for="title">좋아요 : </label> <input type="text"
+				class="form-control" id="likeCount" value="${board.likeCount }"
+				readonly />
+		${likeList }
+		</div>
+
+	<c:set var="isHeart" value="false"/>
+	<div class= "likeDiv">
+	<c:forEach items="${likeList }" var="likedUser">
+	<c:when test="${sessionScope.loginMember.userId==likedUser.who }">
+		<!-- 로그인한 유저가 이 글을 좋아했다면 -->
+		<i class="press"></i>
+		<span class="likeSpan press">liked!</span>
+		<!-- 좋아요 출력 -->
+		<c:set var="isHeart" value="true"/>
+	</c:when>
+	</c:forEach>
+	<!-- 좋아요를 출력하지 않았다면, 좋아요 취소 -->
+	<c:if test="${isHeart==false }">
+		<i></i>
+		<span class="likeSpan">liked!</span>
+	</c:if>
+	</div>
+	<div>
+	이글을 
+	<c:forEach items="${likeList }" var="likeUser">
+		${likeUser.who }, 
+	</c:forEach>
+	가 좋아합니다.
+	</div>
+	
+	
+			
+				
 		<div class="mb-3 mt-3">
 			<label for="title">제 목 : </label> <input type="text"
 				class="form-control" id="title" value="${board.title }" readonly />
-		</div>
-		<div class="mb-3 mt-3">
-			<label for="title">조회수 : </label> <input type="text"
-				class="form-control" id="title" value="${board.readCount }" readonly />
-		</div>
-		<div class="mb-3 mt-3">
-			<label for="title">추천수 : </label> <input type="text"
-				class="form-control" id="title" value="${board.likeCount }" readonly />
 		</div>
 
 		<div class="form-check">
@@ -285,7 +554,8 @@ function deleteBoard() {
 		<div class="btns">
 			<button type="button" class="btn btn-success"
 				onclick="location.href='modiBoard?no=${board.no}&writer=${board.writer}'">수정</button>
-			<button class="btn btn-success" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" >삭제</button>
+			<button class="btn btn-success" class="btn btn-primary"
+				data-bs-toggle="modal" data-bs-target="#myModal">삭제</button>
 			<!-- -->
 			<!-- <button type="button" class="btn btn-success" onclick="location.href='modiBoard?no=${param.no}';">수정</button> -->
 			<button type="button" class="btn btn-warning"
@@ -303,7 +573,7 @@ function deleteBoard() {
 
 
 	<!-- 삭제 버튼 클릭시 나오는 모달-->
-	
+
 	<div class="modal" id="myModal">
 		<div class="modal-dialog modal-sm">
 			<div class="modal-content">
@@ -312,14 +582,14 @@ function deleteBoard() {
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 				</div>
 				<div class="modal-body">삭제를 원하시면 "예" 버튼을 눌러주세요...</div>
-	
+
 				<div class="modal-footer">
 					<button type="button" class="btn btn-danger"
-						data-bs-dismiss="modal" onclick="deleteBoard();" >예</button>
+						data-bs-dismiss="modal" onclick="deleteBoard();">예</button>
 				</div>
 			</div>
 		</div>
 	</div>
- 
+
 </body>
 </html>
