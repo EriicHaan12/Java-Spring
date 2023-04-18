@@ -1,5 +1,7 @@
 package com.springproj.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
@@ -68,17 +70,19 @@ public class HomeController {
 	// Post방식으로 호출
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public void login(LoginDTO login, Model model, RedirectAttributes rttr) throws Exception {
+	public void login(LoginDTO login, Model model, RedirectAttributes rttr, HttpServletRequest req) throws Exception {
 
 		// 먼저 LoginInterceptor 의 preHandle() 호출
 		System.out.println(login.toString());
 
-		MemberVo loginMember = service.login(login);
+		MemberVo loginMember = service.login(login, req);
 
 		System.out.println(loginMember.toString());
 		//// 먼저 LoginInterceptor 의 postHandle() 호출
 		if (loginMember != null) {
 			model.addAttribute("loginMember", loginMember);
+		}else {
+			redirectedUrl("/login");
 		}
 
 		// loginInterceptor의 postHandle() 호출
