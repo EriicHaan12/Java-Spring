@@ -81,10 +81,7 @@ public class HomeController {
 		//// 먼저 LoginInterceptor 의 postHandle() 호출
 		if (loginMember != null) {
 			model.addAttribute("loginMember", loginMember);
-		}else {
-			redirectedUrl("/login");
 		}
-
 		// loginInterceptor의 postHandle() 호출
 
 	}

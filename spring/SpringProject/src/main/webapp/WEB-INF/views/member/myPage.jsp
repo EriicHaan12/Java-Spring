@@ -15,65 +15,77 @@
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script type="text/javascript">
+	function showMessage() {
+
+		$(".msg").show();
+		$(".card").hide();
+		//		message/view+{LoginMember.userId}
+		$.ajax({
+			url : "/message/view/" + '${memberInfo.userId}',
+			type : "get",
+			dataType : "json",
+			success : function(data) {
+				console.log(data);
+				if (data != null) {
+					let output = "<ul class='list-group'>";
+					$.each(data, function(i, msg) {
+						output += " <li class='list-group-item'>";
+						if(msg.isRead=='N'){
+							output+="<img src='/resources/images/new.png' width='15px;'>";
+						}
+						output += "<span class = 'msgContent'>"+ new Date(msg.sendTime).toLocaleString() + "</span>";
+						output += "<span class = 'msgContent'>" + msg.sender+ "</span>";
+						output += "<span class = 'msgContent'>"+ msg.messageText + "</span>";
+						output += "</li>";
+						$(".memberMessage").html(output);
+					});
+
+				}
+			},
+			error : function(data) {
+				console.log(data);
+			}
+		});
+	}
 	function showBasic() {
+		$(".msg").hide();
 		$(".card").show();
-		$(".memberPoint").hide();
 	}
 
-	function showPoint(pageNo) {
-		$(".card").hide();
+	function messageSend() {
+
+		let receiver = $("#receiver").val();
+		let messageText = $("#messageContent").val();
+
 		$.ajax({
-			url : "getMemPoint.mem",
-			type : "get",
-			data : {
-				"userId" : '${memberInfo.userId}',
-				"pageNo" : pageNo
+			url : "/message/send",
+			type : "post",
+			dataType : "text",
+			headers : {
+				"Content-Type" : "application/json",
+				// PUT, DELETE, PATCH 등의 REST HTTP Method가 동작하지 않는 과거의 웹브라우저에서는 
+				// "POST" 방식으로 동작하도록 한다
+				"X-HTTP-Method-Override" : "POST"
 			},
-			dataType : "json", //
-			success : function(data) { //
+			data : JSON.stringify({
+				"receiver" : receiver,
+				"messageText" : messageText
+			}),
+
+			success : function(data) {
+				console.log(data);
+				if (data === "success") {
+					$("#receiver").val('');
+					$("#messageContent").val('');
+				}
+			},
+
+			error : function(data) {
 				console.log(data);
 
-				if (data.status == "success") {
-					parsePoints(data);
-				} else if (data.status == "fail") {
-					alert("잠시 후, 다시 시도해주세요");
-				}
 			}
 		});
 
-		$(".memberPoint").show();
-	}
-	let totalPoint = 0;
-	function parsePoints(json) {
-		let output = "<table class='table table-striped'><thead><tr><th>적립 일시</th>";
-		output += "<th>적립 사유</th><th>적립금</th>";
-		output += "</thead><tbody>";
-		$.each(json.memberPoints, function(i, item) {
-			output += "<tr>";
-			output += "<td>" + item.when + "</td>";
-			output += "<td>" + item.why + "</td>";
-			output += "<td>" + item.howmuch + "</td>";
-			output += "</tr>";
-			totalPoint += item.howmuch
-		});
-		console.log(totalPoint);
-		output += "</tbody></table>";
-
-		$(".outputMp").html(output);
-
-		let pageOutput = "<ul class='pagination'>";
-
-		//pagenation +=" <li class='page-item'><a class='page-link' href='#'>Previous</a></li>";
-		for (let i = json.startNumOfCurrentPagingBlock; i < json.endNumOfCurrentPagingBlock; i++) {
-			pageOutput += "<li class='page-item'><a class='page-link' href='#' onclick='showPoint("
-					+ i + ");'>" + i + "</a></li>";
-		}
-		//pagenation +=" <li class='page-item'><a class='page-link' href='#'>Next</a></li>";
-		pageOutput += "</ul>";
-
-		$(".mpPageNation").html(pageOutput);
-
-		$(".memberPoint").show();
 	}
 </script>
 <style type="text/css">
@@ -84,11 +96,21 @@
 .profileImg {
 	width: 100px;
 }
-.card{
-text-align: center;
+
+.card {
+	text-align: center;
 }
-.profileImg{
-border-left: 30px;
+
+.profileImg {
+	border-left: 30px;
+}
+
+.msgContent {
+	margin-right: 5px;
+}
+
+.sendMsg {
+	margin-top: 5px;
 }
 </style>
 </head>
@@ -100,22 +122,22 @@ border-left: 30px;
 		<ul class="nav">
 			<li class="nav-item"><a class="nav-link active" href="#"
 				onclick="showBasic();">기본정보</a>
-				<div class="card" style="width: 400px; margin: 20px auto;">
+				<div class="card" style="width: 200px; margin: 20px auto;">
 					<div class="profileImg">
-					
-						<img class="card-img-top" src="/resources/${loginMember.userImg }"
-							alt="${loginMember.userId }" >
-					
+
+						<img class="card-img-top" src="/resources/${memberInfo.userImg }"
+							alt="${memberInfo.userId }">
+
 					</div>
 					<div class="card-body">
-						<h4 class="card-title">${loginMember.userId }</h4>
+						<h4 class="card-title">${memberInfo.userId }</h4>
 						<p class="card-text">
-						<div class="userEmail">${loginMember.userEmail }</div>
-						<div class="userMobile">${loginMember.userMobile }</div>
-						<div class="userGender">${loginMember.userGender}</div>
-						<div class="userHobbies">${loginMember.hobbies }</div>
-						<div class="job">${loginMember.job }</div>
-						<div class="memo">${loginMember.memo }</div>
+						<div class="userEmail">${memberInfo.userEmail }</div>
+						<div class="userMobile">${memberInfo.userMobile }</div>
+						<div class="userGender">${memberInfo.userGender}</div>
+						<div class="userHobbies">${memberInfo.hobbies }</div>
+						<div class="job">${memberInfo.job }</div>
+						<div class="memo">${memberInfo.memo }</div>
 
 						<a href="#" class="btn btn-primary">See Profile</a>
 						</p>
@@ -123,12 +145,25 @@ border-left: 30px;
 				</div></li>
 
 			<li class="nav-item"><a class="nav-link memberPoint" href="#"
-				onclick="showPoint();">포인트적립내역</a>
+				onclick="showMessage();">쪽지 주고 받기</a>
+				<div class="msg">
+					<div class="memberMessage"></div>
 
-				<div class="outputMp"></div>
+					<div class="sendMsg">
+						<div class="replyInputDiv">
+							<div class="form-check">
+								<label for="messageContent">받는 사람 :</label> <input type="text"
+									class="form-control" id="receiver" /> <label
+									for="messageContent">보낼 메세지 :</label>
+								<textarea class="form-control" rows="2" id="messageContent"></textarea>
+								<button type="button" class="btn btn-info"
+									onclick="messageSend();">SEND</button>
+								<button type="button" class="btn btn-danger">취소</button>
+							</div>
+						</div>
 
-				<div class="mpPageNation"></div>
-
+					</div>
+					<!-- 
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-3">
@@ -136,12 +171,15 @@ border-left: 30px;
 						</div>
 
 					</div>
-				</div></li>
-			<!-- 	<li class="nav-item"><a class="nav-link" href="#">내가 쓴 글</a></li>
+					 -->
+				</div>
+	</div>
+	</li>
+	<!-- 	<li class="nav-item"><a class="nav-link" href="#">내가 쓴 글</a></li>
 			<li class="nav-item"><a class="nav-link disabled" href="#">Disabled</a>
 			</li>
 			 -->
-		</ul>
+	</ul>
 	</div>
 	<jsp:include page="../footer.jsp"></jsp:include>
 </body>
