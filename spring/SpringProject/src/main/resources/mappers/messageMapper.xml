@@ -9,14 +9,18 @@
 		insert into message(sender,receiver,messageText)
 		values(#{sender}, #{receiver}, #{messageText})
 	</insert>
-<select id="getAllMsg"
+	<select id="getAllMsg"
 		resultType="com.springproj.domain.MessageVo">
-		select * from message where receiver= #{userId} order by sendTime desc
+		select * from message where receiver= #{userId} order by
+		sendTime desc
 	</select>
 
 	<update id="updateMsgReadProc">
 		update message set isRead ='Y' where msgId = #{msgId}
 	</update>
 
+	<select id="getMsgCount" resultType="int">
+		select count(*) from message where receiver =#{userId} and isRead = 'N';
+	</select>
 
 </mapper>

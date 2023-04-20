@@ -68,5 +68,8 @@ public interface BoardDAO {
 	//no번글을 좋아요 한 유저 리스트 가져오기
 	List<BoardLikeDTO> getLikeList(int no)throws Exception;
 
+	// 모든 첨부파일 가져오기
+	List<BoardImg> selectAllBoardImg()throws Exception;
+
 
 }

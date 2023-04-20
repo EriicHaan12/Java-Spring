@@ -15,4 +15,7 @@ public interface MessageDAO {
 	//쪽지 읽음 처리
 	void updateMsgReadProc(int msgId)throws Exception;
 
+	//로그인한 유저가 읽지 않은 쪽지 갯수 가져오기
+	int selectMsgCnt(String userId)throws Exception;
+
 }

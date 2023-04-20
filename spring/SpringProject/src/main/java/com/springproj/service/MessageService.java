@@ -10,4 +10,7 @@ public interface MessageService {
 
 	//userId에게 도착한 모든 쪽지 가져오기
 	List<MessageVo> getAllMsg(String userId)throws Exception;
+
+	//읽지 않은 쪽지 갯수 가져오기
+	int getMsgCnt(String userId)throws Exception;
 }

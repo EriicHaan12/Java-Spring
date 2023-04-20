@@ -133,4 +133,9 @@
 		select * from boardlike where boardNo =#{boardNo}
 	</select>
 
+
+<select id="getAllAppendFiles" resultType="com.springproj.domain.BoardImg">
+select * from boardImg
+</select>
+
 </mapper>

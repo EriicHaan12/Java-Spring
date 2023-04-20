@@ -39,4 +39,10 @@ public class MessageServiceImpl implements MessageService {
 		return lst;
 	}
 
+	@Override
+	public int getMsgCnt(String userId) throws Exception {
+		
+		return dao.selectMsgCnt(userId);
+	}
+
 }

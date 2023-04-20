@@ -66,4 +66,18 @@ public class MessageController {
 
 		return result;
 	}
+	@RequestMapping("updateMsgCnt/{userId}")
+	public ResponseEntity<String> getMsgCnt(@PathVariable("userId")String userId) {
+		
+		ResponseEntity<String>result = null;
+		
+		try {
+			int cnt = service.getMsgCnt(userId);
+			result = new ResponseEntity<String>(cnt+"",HttpStatus.OK);
+		} catch (Exception e) {
+			result = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+			e.printStackTrace();
+		}
+		return result;
+	}
 }

@@ -14,6 +14,40 @@
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+$(function(){
+	let user = '${sessionScope.loginMember.userId}';
+	if(user!=''){
+		updateMsgCnt(user);	
+	}
+	setInterval(() => {
+		if(user!=''){
+			updateMsgCnt(user);	
+		}
+	}, 1000 * 60 * 1);
+	//ms(밀리세컨드)* s(초)* m(분)
+});
+
+function updateMsgCnt(user){
+	$.ajax({
+		url : "/message/updateMsgCnt/"+ user, 
+		type : "get", 
+		dataType : "text",  // 수신받을 데이터 타입
+		success : function(data) { 
+			console.log(data);
+		 $(".badge").html(data);
+		}, error : function(data) {
+			console.log(data);
+		}
+	});
+	
+	
+}
+
+</script>
+
 <title>Insert title here</title>
 
 <style type="text/css">
@@ -42,8 +76,10 @@
 					<li class="nav-item"><a class="nav-link" href="/board/listAll">게시판</a></li>
 
 
+
 					<c:choose>
 						<c:when test="${ sessionScope.loginMember!=null }">
+
 
 							<li class="nav-item"><a class="nav-link" href="/logout">로그아웃
 									<img class="userImg"
@@ -51,9 +87,14 @@
 									${sessionScope.loginMember.userId }
 							</a></li>
 							
+
 							<li class="nav-item"><a class="nav-link"
-								href="/member/myPage?userId=${sessionScope.loginMember.userId}">Mypage </a></li>
-							
+								href="/member/myPage?userId=${sessionScope.loginMember.userId}">Mypage
+							</a></li>
+						
+						<button type="button" class="btn btn-primary">
+								Messages <span class="badge bg-danger"></span>
+							</button>
 						</c:when>
 
 						<c:otherwise>
